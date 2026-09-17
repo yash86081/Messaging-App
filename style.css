@@ -1,115 +1,1056 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: white;
+/* =========================
+   GENERAL
+========================= */
+
+:root {
+
+    --background: #111;
+    --panel: #181818;
+    --panel2: #222;
+    --border: #444;
+
+    --text: white;
+    --muted: #aaa;
+
+    --sent: #333;
+    --received: #222;
+
+    --button: #333;
+    --button-hover: #444;
+
+    --input: #222;
+
 }
 
 
-/* ---------- AUTH ---------- */
+* {
+
+    box-sizing: border-box;
+
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family: Arial, sans-serif;
+
+    background: var(--background);
+
+    color: var(--text);
+
+    transition: background 0.3s, color 0.3s;
+
+}
+
+
+button,
+input {
+
+    font-family: inherit;
+
+}
+
+
+/* =========================
+   LOADING SCREEN
+========================= */
+
+#LoadingScreen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: var(--background);
+
+    z-index: 9999;
+
+}
+
+
+.LoadingBox {
+
+    text-align: center;
+
+}
+
+
+.LoadingSpinner {
+
+    width: 35px;
+
+    height: 35px;
+
+    margin: 20px auto;
+
+    border: 4px solid #555;
+
+    border-top: 4px solid white;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+
+}
+
+
+@keyframes spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
 
 #Auth {
-    width: 300px;
-    margin: 100px auto;
+
     text-align: center;
+
+    padding-top: 50px;
+
 }
+
+
+#Auth h1 {
+
+    font-size: 35px;
+
+}
+
 
 #Auth input {
+
     display: block;
-    width: 100%;
-    box-sizing: border-box;
-    margin: 10px 0;
-    padding: 12px;
+
+    width: 250px;
+
+    height: 40px;
+
+    margin: 10px auto;
+
+    padding: 8px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: var(--input);
+
+    color: var(--text);
+
+    font-size: 16px;
+
 }
+
 
 #Auth button {
-    padding: 10px 16px;
+
+    height: 38px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: var(--button);
+
+    color: var(--text);
+
     cursor: pointer;
+
 }
 
 
-/* ---------- CHAT APP ---------- */
+#Auth button:hover {
+
+    background: var(--button-hover);
+
+}
+
+
+/* =========================
+   CHAT APP
+========================= */
 
 #ChatApp {
-    height: 100vh;
+
+    padding: 15px;
+
 }
 
-#Logout {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 8px 14px;
+
+/* =========================
+   TOP BAR
+========================= */
+
+#TopBar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+
+}
+
+
+#TopBar h1 {
+
+    margin: 0;
+
+}
+
+
+#TopButtons {
+
+    display: flex;
+
+    gap: 8px;
+
+}
+
+
+#TopButtons button {
+
+    height: 35px;
+
+    padding: 0 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: var(--button);
+
+    color: var(--text);
+
     cursor: pointer;
+
 }
 
 
-/* ---------- MAIN CHAT LAYOUT ---------- */
+#TopButtons button:hover {
+
+    background: var(--button-hover);
+
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+#SettingsPanel {
+
+    display: none;
+
+    position: fixed;
+
+    top: 60px;
+
+    right: 20px;
+
+    width: 300px;
+
+    padding: 20px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    z-index: 1000;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+}
+
+
+#SettingsPanel input {
+
+    width: 100%;
+
+    height: 35px;
+
+    margin: 8px 0 12px;
+
+    padding: 8px;
+
+    background: var(--input);
+
+    color: var(--text);
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+}
+
+
+#SettingsPanel button {
+
+    margin: 4px;
+
+    padding: 8px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: var(--button);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+}
+
+
+#SettingsPanel button:hover {
+
+    background: var(--button-hover);
+
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
 
 #Container {
+
     display: flex;
-    height: 100vh;
+
+    width: 95%;
+
+    max-width: 1300px;
+
+    height: 650px;
+
+    margin: auto;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: var(--panel);
+
 }
 
 
-/* ---------- CHAT LIST ---------- */
+/* =========================
+   CHAT LIST
+========================= */
 
 #Chats {
-    width: 250px;
-    padding: 20px;
-    box-sizing: border-box;
-    border-right: 1px solid #333;
+
+    width: 270px;
+
+    padding: 15px;
+
+    border-right: 1px solid var(--border);
+
+    overflow-y: auto;
+
 }
 
-#UserList p {
+
+#Chats h2 {
+
+    margin-top: 0;
+
+}
+
+
+.User {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
     padding: 10px;
+
     margin: 5px 0;
+
+    border-radius: 8px;
+
     cursor: pointer;
-    border-radius: 6px;
+
+    transition: background 0.2s;
+
 }
 
-#UserList p:hover {
-    background: #222;
+
+.User:hover {
+
+    background: var(--panel2);
+
 }
 
 
-/* ---------- CURRENT CHAT ---------- */
+.UserUnread {
+
+    margin-left: auto;
+
+    min-width: 22px;
+
+    height: 22px;
+
+    padding: 2px 6px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background: #777;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================
+   AVATARS
+========================= */
+
+.Avatar {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    background: #333;
+
+}
+
+
+.SmallAvatar {
+
+    width: 35px;
+
+    height: 35px;
+
+}
+
+
+/* =========================
+   CHAT
+========================= */
 
 #Chat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-sizing: border-box;
-}
 
-#Messages {
-    flex: 1;
-    overflow-y: auto;
-    margin: 15px 0;
-}
-
-
-/* ---------- MESSAGE BAR ---------- */
-
-#MessageBar {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-#Input {
-    width: 500px;
-    height: 35px;
-    font-size: 16px;
-}
-
-#Send {
-    width: 80px;
-    height: 35px;
-    font-size: 16px;
     position: relative;
 
-    left: 520px;
-    top: -35px;
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+#ChatHeader {
+
+    height: 65px;
+
+    padding: 10px 15px;
+
+    border-bottom: 1px solid var(--border);
+
+}
+
+
+#ChatUserInfo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+#ChatTitle {
+
+    margin: 0;
+
+}
+
+
+#TypingIndicator {
+
+    margin: 3px 0 0;
+
+    font-size: 12px;
+
+    color: var(--muted);
+
+    min-height: 14px;
+
+}
+
+
+/* =========================
+   MESSAGES
+========================= */
+
+#Messages {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 15px;
+
+}
+
+
+#EmptyChat {
+
+    color: var(--muted);
+
+    text-align: center;
+
+    margin-top: 50px;
+
+}
+
+
+.MessageBox {
+
+    position: relative;
+
+    max-width: 65%;
+
+    margin: 10px 0;
+
+    animation: messageAppear 0.2s ease;
+
+}
+
+
+@keyframes messageAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+.NoEffects .MessageBox {
+
+    animation: none;
+
+}
+
+
+.Sent {
+
+    margin-left: auto;
+
+    text-align: right;
+
+}
+
+
+.Received {
+
+    margin-right: auto;
+
+    text-align: left;
+
+}
+
+
+.SenderName {
+
+    margin: 0 5px 4px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    color: var(--muted);
+
+}
+
+
+.Message {
+
+    display: inline-block;
+
+    margin: 0;
+
+    padding: 10px 14px;
+
+    border-radius: 15px;
+
+    font-size: 15px;
+
+    word-break: break-word;
+
+    background: var(--received);
+
+}
+
+
+.Sent .Message {
+
+    background: var(--sent);
+
+}
+
+
+.Edited {
+
+    margin-left: 5px;
+
+    font-size: 10px;
+
+    color: var(--muted);
+
+}
+
+
+/* =========================
+   REPLY PREVIEW
+========================= */
+
+.ReplyPreview {
+
+    margin: 5px 0;
+
+    padding: 6px 10px;
+
+    border-left: 3px solid #888;
+
+    background: var(--panel2);
+
+    border-radius: 5px;
+
+    font-size: 12px;
+
+    color: var(--muted);
+
+}
+
+
+/* =========================
+   MESSAGE ACTIONS
+========================= */
+
+.MessageActions {
+
+    display: none;
+
+    gap: 4px;
+
+    margin-top: 5px;
+
+}
+
+
+.MessageBox:hover .MessageActions {
+
+    display: flex;
+
+}
+
+
+.MessageActions button {
+
+    border: none;
+
+    padding: 4px 7px;
+
+    border-radius: 5px;
+
+    background: var(--button);
+
+    color: var(--text);
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+}
+
+
+.MessageActions button:hover {
+
+    background: var(--button-hover);
+
+}
+
+
+/* =========================
+   REACTIONS
+========================= */
+
+.Reactions {
+
+    display: flex;
+
+    gap: 3px;
+
+    margin-top: 5px;
+
+}
+
+
+.ReactionButton {
+
+    border: none;
+
+    padding: 3px 7px;
+
+    border-radius: 12px;
+
+    background: var(--panel2);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+}
+
+
+.ReactionButton:hover {
+
+    transform: scale(1.1);
+
+}
+
+
+/* =========================
+   REPLY BAR
+========================= */
+
+#ReplyBar {
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 8px 15px;
+
+    border-top: 1px solid var(--border);
+
+    background: var(--panel2);
+
+}
+
+
+#ReplyBar p {
+
+    margin: 3px 0 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+}
+
+
+#CancelReply {
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+}
+
+
+/* =========================
+   MESSAGE BAR
+========================= */
+
+#MessageBar {
+
+    display: flex;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    border-top: 1px solid var(--border);
+
+}
+
+
+#Input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 40px;
+
+    padding: 8px 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--input);
+
+    color: var(--text);
+
+    font-size: 16px;
+
+}
+
+
+#Send {
+
+    width: 80px;
+
+    height: 40px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--button);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+}
+
+
+#Send:hover {
+
+    background: var(--button-hover);
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    #ChatApp {
+
+        padding: 5px;
+
+    }
+
+
+    #TopBar {
+
+        padding: 5px;
+
+    }
+
+
+    #TopBar h1 {
+
+        font-size: 22px;
+
+    }
+
+
+    #Container {
+
+        width: 100%;
+
+        height: calc(100vh - 70px);
+
+        border-radius: 0;
+
+    }
+
+
+    #Chats {
+
+        width: 90px;
+
+        padding: 5px;
+
+    }
+
+
+    #Chats h2 {
+
+        font-size: 15px;
+
+    }
+
+
+    .User {
+
+        justify-content: center;
+
+        padding: 7px 2px;
+
+    }
+
+
+    .User span {
+
+        display: none;
+
+    }
+
+
+    .SmallAvatar {
+
+        width: 38px;
+
+        height: 38px;
+
+    }
+
+
+    .UserUnread {
+
+        position: absolute;
+
+        margin-left: 45px;
+
+        margin-top: -30px;
+
+    }
+
+
+    #ChatHeader {
+
+        height: 60px;
+
+    }
+
+
+    #Messages {
+
+        padding: 10px;
+
+    }
+
+
+    .MessageBox {
+
+        max-width: 80%;
+
+    }
+
+
+    #Input {
+
+        font-size: 14px;
+
+    }
+
+
+    #Send {
+
+        width: 65px;
+
+    }
+
+
+    #SettingsPanel {
+
+        top: 55px;
+
+        right: 5px;
+
+        width: calc(100% - 10px);
+
+    }
+
+}
+
+
+/* =========================
+   LIGHT THEME
+========================= */
+
+body.LightTheme {
+
+    --background: #f2f2f2;
+
+    --panel: #ffffff;
+
+    --panel2: #e8e8e8;
+
+    --border: #cccccc;
+
+    --text: #111;
+
+    --muted: #666;
+
+    --sent: #d8d8d8;
+
+    --received: #eeeeee;
+
+    --button: #dddddd;
+
+    --button-hover: #cccccc;
+
+    --input: #ffffff;
 
 }
