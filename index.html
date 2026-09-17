@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+
+        <div id="Auth">
+
+            <h1>Messaging Project</h1>
+
+            <div id="SignupPage">
+
+                <h2>Sign Up</h2>
+
+                <input id="Username" placeholder="Username">
+                <input id="Email" placeholder="Email">
+                <input id="Password" type="password" placeholder="Password">
+
+                <button id="Signup">Sign Up</button>
+
+                <p>Already have an account?</p>
+                <button id="ShowLogin">Log in</button>
+
+            </div>
+
+
+            <div id="LoginPage">
+
+                <h2>Log In</h2>
+
+                <input id="LoginEmail" placeholder="Email">
+                <input id="LoginPassword" type="password" placeholder="Password">
+
+                <button id="Login">Log In</button>
+
+                <p>Don't have an account?</p>
+                <button id="ShowSignup">Sign up</button>
+
+            </div>
+
+        </div>
+
+
+        <div id="ChatApp">
+            <button id="Logout">Log Out</button>
+            <div id="Container">
+
+                <div id="Chats">
+
+                    <h2>Chats</h2>
+
+                    <div id="UserList"></div>
+
+                </div>
+
+
+                <div id="Chat">
+
+                    <h2>Alex</h2>
+
+                    <div id="Messages">
+                    </div>
+
+                    <input id="Input" placeholder="Type a message...">
+                    <button id="Send">Send</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="script.js"></script>
+
+    </body>
+</html>

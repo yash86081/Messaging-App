@@ -1,0 +1,115 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+}
+
+
+/* ---------- AUTH ---------- */
+
+#Auth {
+    width: 300px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+#Auth input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 10px 0;
+    padding: 12px;
+}
+
+#Auth button {
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+
+/* ---------- CHAT APP ---------- */
+
+#ChatApp {
+    height: 100vh;
+}
+
+#Logout {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 14px;
+    cursor: pointer;
+}
+
+
+/* ---------- MAIN CHAT LAYOUT ---------- */
+
+#Container {
+    display: flex;
+    height: 100vh;
+}
+
+
+/* ---------- CHAT LIST ---------- */
+
+#Chats {
+    width: 250px;
+    padding: 20px;
+    box-sizing: border-box;
+    border-right: 1px solid #333;
+}
+
+#UserList p {
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+#UserList p:hover {
+    background: #222;
+}
+
+
+/* ---------- CURRENT CHAT ---------- */
+
+#Chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#Messages {
+    flex: 1;
+    overflow-y: auto;
+    margin: 15px 0;
+}
+
+
+/* ---------- MESSAGE BAR ---------- */
+
+#MessageBar {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+#Input {
+    width: 500px;
+    height: 35px;
+    font-size: 16px;
+}
+
+#Send {
+    width: 80px;
+    height: 35px;
+    font-size: 16px;
+    position: relative;
+
+    left: 520px;
+    top: -35px;
+
+}
