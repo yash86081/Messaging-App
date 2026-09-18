@@ -1445,3 +1445,209 @@ MessageBelongsToCurrentChat=function(item){
 
 if(typeof SetupDeveloperV4==="function")SetupDeveloperV4();
 if(CurrentUser)LoadGroupsV4();
+
+/* ================= V4 FINAL POLISH ================= */
+const ProfileBio=document.getElementById("ProfileBio");
+const FriendRequestsButton=document.getElementById("FriendRequestsButton");
+const FriendModal=document.getElementById("FriendModal");
+const CloseFriends=document.getElementById("CloseFriends");
+const FriendRequestsList=document.getElementById("FriendRequestsList");
+const ProfileModal=document.getElementById("ProfileModal");
+const CloseProfile=document.getElementById("CloseProfile");
+const ProfileModalAvatar=document.getElementById("ProfileModalAvatar");
+const ProfileModalName=document.getElementById("ProfileModalName");
+const ProfileModalBio=document.getElementById("ProfileModalBio");
+const ProfileModalMeta=document.getElementById("ProfileModalMeta");
+const SearchModal=document.getElementById("SearchModal");
+const CloseSearch=document.getElementById("CloseSearch");
+const GlobalSearchInput=document.getElementById("GlobalSearchInput");
+const GlobalSearchResults=document.getElementById("GlobalSearchResults");
+const ImageViewer=document.getElementById("ImageViewer");
+const CloseImage=document.getElementById("CloseImage");
+const ViewerImage=document.getElementById("ViewerImage");
+const Announcements=document.getElementById("Announcements");
+const TypingStatus=document.getElementById("TypingStatus");
+
+if(ProfileBio && CurrentProfile) ProfileBio.value=CurrentProfile.bio||"";
+
+async function ShowProfileV4(userId){
+    const {data:p}=await supabaseClient.from("profiles").select("id,username,avatar_url,bio").eq("id",userId).maybeSingle();
+    if(!p)return;
+    ProfileModalAvatar.replaceChildren();
+    SetAvatarElement(ProfileModalAvatar,p.avatar_url);
+    ProfileModalName.textContent=p.username||"User";
+    ProfileModalBio.textContent=p.bio||"No bio yet.";
+    ProfileModalBio.className="ProfileBio";
+    const status=OnlineUsers.has(userId)?"🟢 Online":"⚪ Offline";
+    ProfileModalMeta.textContent=status;
+    ProfileModal.style.display="flex";
+}
+CloseProfile?.addEventListener("click",()=>ProfileModal.style.display="none");
+ProfileModal?.addEventListener("click",e=>{if(e.target===ProfileModal)ProfileModal.style.display="none";});
+
+async function LoadFriendRequestsV4(){
+    if(!CurrentUser)return;
+    const {data,error}=await supabaseClient.from("friend_requests")
+      .select("id,sender_id,status,created_at").eq("receiver_id",CurrentUser.id).eq("status","pending").order("created_at",{ascending:false});
+    if(error){FriendRequestsList.textContent=error.message;return;}
+    FriendRequestsList.replaceChildren();
+    if(!data?.length){FriendRequestsList.textContent="No pending requests.";return;}
+    for(const r of data){
+        const {data:p}=await supabaseClient.from("profiles").select("username").eq("id",r.sender_id).maybeSingle();
+        const row=document.createElement("div");row.className="RequestRow";
+        const name=document.createElement("span");name.textContent=p?.username||"User";
+        const b=document.createElement("button");b.textContent="Accept";
+        b.onclick=async()=>{await AcceptFriendRequestV4(r.sender_id);await LoadFriendRequestsV4();};
+        row.append(name,b);FriendRequestsList.appendChild(row);
+    }
+}
+FriendRequestsButton?.addEventListener("click",async()=>{FriendModal.style.display="flex";await LoadFriendRequestsV4();});
+CloseFriends?.addEventListener("click",()=>FriendModal.style.display="none");
+
+async function SaveProfileBioV4(){
+    if(!CurrentUser||!ProfileBio)return;
+    const bio=ProfileBio.value.trim().slice(0,160);
+    const {error}=await supabaseClient.from("profiles").update({bio}).eq("id",CurrentUser.id);
+    if(error)return alert(error.message);
+    if(CurrentProfile)CurrentProfile.bio=bio;
+    alert("Profile saved!");
+}
+const oldSaveProfile=SaveProfile.onclick;
+SaveProfile.addEventListener("click",SaveProfileBioV4);
+
+async function LoadAnnouncementsV4(){
+    if(!CurrentUser||!Announcements)return;
+    const {data}=await supabaseClient.from("site_announcements").select("id,title,body,created_at").eq("active",true).order("created_at",{ascending:false}).limit(3);
+    Announcements.replaceChildren();
+    for(const a of data||[]){
+        const box=document.createElement("div");box.className="Announcement";
+        const title=document.createElement("strong");title.textContent=a.title;
+        const body=document.createElement("span");body.textContent=a.body;
+        box.append(title,body);Announcements.appendChild(box);
+    }
+}
+async function CheckMaintenanceV4(){
+    if(!CurrentUser)return false;
+    const {data}=await supabaseClient.from("site_settings").select("value").eq("key","maintenance_mode").maybeSingle();
+    const on=data?.value?.enabled===true;
+    if(on && !(await IsDeveloperV4())){
+        document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial;color:white;background:#111"><div style="text-align:center"><h1>🛠️ Maintenance</h1><p>The website is temporarily unavailable.</p></div></div>';
+        return true;
+    }
+    return false;
+}
+
+let TypingChannel=null,TypingTimer=null,OtherTyping=false;
+function StartTypingV4(){
+    if(!CurrentUser)return;
+    if(!TypingChannel){
+        TypingChannel=supabaseClient.channel("typing-v4");
+        TypingChannel.on("broadcast",{event:"typing"},({payload})=>{
+            if(!payload||payload.userId===CurrentUser.id)return;
+            const relevant=CurrentGroup?payload.groupId===CurrentGroup.id:(!payload.groupId&&payload.userId===CurrentChatUser?.id);
+            if(!relevant)return;
+            OtherTyping=true;TypingStatus.textContent="typing...";
+            clearTimeout(TypingTimer);TypingTimer=setTimeout(()=>{OtherTyping=false;TypingStatus.textContent="";},1800);
+        }).subscribe();
+    }
+}
+Input?.addEventListener("input",()=>{
+    if(!CurrentUser||!TypingChannel)return;
+    clearTimeout(window.typingSendTimer);
+    window.typingSendTimer=setTimeout(()=>TypingChannel.send({type:"broadcast",event:"typing",payload:{userId:CurrentUser.id,groupId:CurrentGroup?.id||null}}),120);
+});
+StartTypingV4();
+
+async function GlobalSearchV4(q){
+    if(!CurrentUser||!q.trim())return;
+    const {data,error}=await supabaseClient.from("messages").select("id,sender_id,receiver_id,group_id,content,created_at").ilike("content","%"+q.trim()+"%").order("created_at",{ascending:false}).limit(100);
+    GlobalSearchResults.replaceChildren();
+    if(error){GlobalSearchResults.textContent=error.message;return;}
+    for(const m of data||[]){
+        const row=document.createElement("div");row.className="SearchResult";
+        const textContent=String(m.content||"").replace(/^FILE:.*$/,"[file]").slice(0,160);
+        const date=new Date(m.created_at).toLocaleString();
+        row.innerHTML="<strong>"+(m.group_id?"Group message":"Message")+"</strong><br>"+textContent+"<br><small>"+date+"</small>";
+        row.onclick=async()=>{
+            if(m.group_id){
+                const {data:g}=await supabaseClient.from("groups").select("id,name,avatar_url,owner_id,created_at").eq("id",m.group_id).maybeSingle();
+                if(g){await OpenGroupV4(g);setTimeout(()=>JumpToMessage(m.id),100);}
+            }else{
+                const other=m.sender_id===CurrentUser.id?m.receiver_id:m.sender_id;
+                const {data:u}=await supabaseClient.from("profiles").select("id,username,avatar_url").eq("id",other).maybeSingle();
+                if(u){await OpenChat(u);setTimeout(()=>JumpToMessage(m.id),100);}
+            }
+            SearchModal.style.display="none";
+        };
+        GlobalSearchResults.appendChild(row);
+    }
+}
+UserSearch.addEventListener("dblclick",()=>{SearchModal.style.display="flex";GlobalSearchInput.focus();});
+GlobalSearchInput?.addEventListener("input",()=>{clearTimeout(window.globalSearchTimer);window.globalSearchTimer=setTimeout(()=>GlobalSearchV4(GlobalSearchInput.value),250);});
+CloseSearch?.addEventListener("click",()=>SearchModal.style.display="none");
+
+Messages.addEventListener("click",e=>{
+    const img=e.target.closest(".AttachmentImage");
+    if(img){ViewerImage.src=img.src;ImageViewer.style.display="flex";}
+});
+CloseImage?.addEventListener("click",()=>{ImageViewer.style.display="none";ViewerImage.src="";});
+
+async function TogglePinV4(item){
+    const {data:existing}=await supabaseClient.from("pinned_messages").select("message_id").eq("message_id",item.id).maybeSingle();
+    if(existing) await supabaseClient.from("pinned_messages").delete().eq("message_id",item.id);
+    else await supabaseClient.from("pinned_messages").insert({message_id:item.id,pinned_by:CurrentUser.id});
+    alert(existing?"Message unpinned.":"Message pinned.");
+}
+
+async function ReportMessageV4(item){
+    const reason=prompt("Reason for report:");
+    if(!reason?.trim())return;
+    const {error}=await supabaseClient.from("reports").insert({
+        reporter_id:CurrentUser.id,reported_user_id:item.sender_id,message_id:item.id,
+        group_id:item.group_id||null,reason:reason.trim(),status:"open"
+    });
+    if(error)alert(error.message);else alert("Report submitted.");
+}
+
+document.getElementById("MessageMenu")?.addEventListener("click",async e=>{
+    const action=e.target.closest("button")?.dataset.action;
+    if(!MenuMessage)return;
+    if(action==="pin")await TogglePinV4(MenuMessage);
+    if(action==="report")await ReportMessageV4(MenuMessage);
+});
+
+async function AddGroupMemberV4(){
+    if(!CurrentGroup||CurrentGroup.owner_id!==CurrentUser.id)return alert("Only the group owner can add members.");
+    const name=prompt("Username to add:");
+    if(!name?.trim())return;
+    const {data:p}=await supabaseClient.from("profiles").select("id,username").eq("username",name.trim()).maybeSingle();
+    if(!p)return alert("User not found.");
+    const {error}=await supabaseClient.from("group_members").insert({group_id:CurrentGroup.id,user_id:p.id,role:"member"});
+    if(error)alert(error.message);else alert("Member added!");
+}
+function AddGroupControlsV4(){
+    let b=document.getElementById("GroupManageButton");
+    if(!b){b=document.createElement("button");b.id="GroupManageButton";b.textContent="👥";b.title="Add group member";b.onclick=AddGroupMemberV4;document.getElementById("ChatHeader")?.appendChild(b);}
+    b.style.display=CurrentGroup&&CurrentGroup.owner_id===CurrentUser?.id?"block":"none";
+}
+const oldOpenGroupV4=OpenGroupV4;
+OpenGroupV4=async function(group){await oldOpenGroupV4(group);AddGroupControlsV4();};
+const oldOpenChatV4=OpenChat;
+OpenChat=async function(user){CurrentGroup=null;await oldOpenChatV4(user);AddGroupControlsV4();};
+
+document.addEventListener("dblclick",e=>{
+    const item=e.target.closest(".UserItem");
+    if(item?.dataset.userId)ShowProfileV4(item.dataset.userId);
+});
+
+const oldSetupDeveloper=SetupDeveloperV4;
+SetupDeveloperV4=async function(){await oldSetupDeveloper();};
+
+(async()=>{
+    if(CurrentUser){
+        await LoadAnnouncementsV4();
+        if(await CheckMaintenanceV4())return;
+        StartTypingV4();
+        if(ProfileBio && CurrentProfile)ProfileBio.value=CurrentProfile.bio||"";
+    }
+})();
