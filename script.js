@@ -48,6 +48,28 @@ const StickerFile = document.getElementById("StickerFile");
 const UploadSticker = document.getElementById("UploadSticker");
 const EnableNotifications = document.getElementById("EnableNotifications");
 const MessageMenu = document.getElementById("MessageMenu");
+const GroupList = document.getElementById("GroupList");
+const NewGroup = document.getElementById("NewGroup");
+const DeveloperButton = document.getElementById("DeveloperButton");
+const DeveloperPanel = document.getElementById("DeveloperPanel");
+const CloseDeveloper = document.getElementById("CloseDeveloper");
+const DeveloperVerify = document.getElementById("DeveloperVerify");
+const DeveloperPassword = document.getElementById("DeveloperPassword");
+const VerifyDeveloper = document.getElementById("VerifyDeveloper");
+const DeveloperVerifyStatus = document.getElementById("DeveloperVerifyStatus");
+const DeveloperContent = document.getElementById("DeveloperContent");
+const DevStats = document.getElementById("DevStats");
+const DeveloperUsers = document.getElementById("DeveloperUsers");
+const DeveloperUserSearch = document.getElementById("DeveloperUserSearch");
+const DeveloperReports = document.getElementById("DeveloperReports");
+const AnnouncementTitle = document.getElementById("AnnouncementTitle");
+const AnnouncementBody = document.getElementById("AnnouncementBody");
+const SendAnnouncement = document.getElementById("SendAnnouncement");
+const RefreshDeveloper = document.getElementById("RefreshDeveloper");
+const DeveloperSystemStatus = document.getElementById("DeveloperSystemStatus");
+const ToggleRegistration = document.getElementById("ToggleRegistration");
+const ToggleGroups = document.getElementById("ToggleGroups");
+const MaintenanceToggle = document.getElementById("MaintenanceToggle");
 
 let CurrentUser = null;
 let CurrentProfile = null;
@@ -59,6 +81,9 @@ let OnlineUsers = new Set();
 let MenuMessage = null;
 let LoadedMessages = [];
 let SearchTimer = null;
+let CurrentGroup = null;
+let GroupProfiles = new Map();
+let DeveloperVerified = false;
 
 function SetLoading(text, progress) {
     LoadingText.textContent = text;
@@ -1130,3 +1155,286 @@ function NotifyNewMessage(item) {
 
 ShowChatPlaceholder();
 CheckUser(true);
+/* ================= V4 GROUP CHATS ================= */
+
+async function LoadGroupsV4() {
+    if (!CurrentUser || !GroupList) return;
+    const { data: memberships, error } = await supabaseClient.from("group_members")
+        .select("group_id,role").eq("user_id",CurrentUser.id);
+    if (error) { console.log("Groups:",error.message); return; }
+
+    const ids=(memberships||[]).map(x=>x.group_id);
+    GroupList.replaceChildren();
+    if (!ids.length) {
+        const e=document.createElement("p"); e.className="LastMessage"; e.textContent="No groups yet"; GroupList.appendChild(e); return;
+    }
+
+    const {data:groups,error:groupError}=await supabaseClient.from("groups")
+        .select("id,name,avatar_url,owner_id,created_at").in("id",ids).order("created_at",{ascending:false});
+    if(groupError){console.log("Groups:",groupError.message);return;}
+
+    for(const group of groups||[]){
+        const item=document.createElement("div");
+        item.className="GroupItem"; item.dataset.groupId=group.id;
+        const icon=document.createElement("div"); icon.className="GroupIcon"; icon.textContent="👥";
+        const info=document.createElement("div"); info.className="GroupInfo";
+        const name=document.createElement("span"); name.className="GroupName"; name.textContent=group.name;
+        const meta=document.createElement("span"); meta.className="GroupMeta"; meta.textContent=group.owner_id===CurrentUser.id?"Owner":"Group";
+        info.append(name,meta); item.append(icon,info); item.onclick=()=>OpenGroupV4(group); GroupList.appendChild(item);
+    }
+}
+
+async function OpenGroupV4(group) {
+    CurrentGroup=group; CurrentChatUser=null; ReplyingTo=null;
+    localStorage.setItem("messaging-last-group",group.id);
+    ReplyBar.style.display="none"; StickerPanel.style.display="none"; HideMessageMenu();
+    document.querySelectorAll(".UserItem,.GroupItem").forEach(x=>x.classList.remove("Active"));
+    document.querySelector('.GroupItem[data-group-id="'+group.id+'"]')?.classList.add("Active");
+    ChatTitle.textContent=group.name; ChatStatus.textContent="Group chat";
+    SetDefaultAvatar(ChatAvatar); SetChatReadyState(true);
+    await LoadGroupMessagesV4(); Input.focus();
+}
+
+async function LoadGroupMessagesV4(searchText="") {
+    if(!CurrentUser||!CurrentGroup)return;
+    const {data,error}=await supabaseClient.from("messages").select("*")
+        .eq("group_id",CurrentGroup.id).order("created_at",{ascending:true});
+    if(error){console.log("Group messages:",error.message);return;}
+    LoadedMessages=data||[]; GroupProfiles.clear();
+    const ids=[...new Set(LoadedMessages.map(x=>x.sender_id))];
+    if(ids.length){
+        const {data:profiles}=await supabaseClient.from("profiles").select("id,username,avatar_url").in("id",ids);
+        for(const p of profiles||[])GroupProfiles.set(p.id,p);
+    }
+    Messages.replaceChildren();
+    const q=searchText.trim().toLowerCase();
+    for(const item of LoadedMessages){
+        if(q&&!SearchableMessage(item).toLowerCase().includes(q))continue;
+        AppendGroupMessageV4(item);
+    }
+    ScrollToBottom();
+}
+
+function AppendGroupMessageV4(item) {
+    if(!CurrentGroup||item.group_id!==CurrentGroup.id)return;
+    if(Messages.querySelector('[data-message-id="'+item.id+'"]'))return;
+    const box=document.createElement("div");
+    box.className="MessageBox"; box.dataset.messageId=item.id;
+    box.classList.add(item.sender_id===CurrentUser.id?"Sent":"Received");
+    const sender=document.createElement("p"); sender.className="SenderName";
+    sender.textContent=item.sender_id===CurrentUser.id?"You":(GroupProfiles.get(item.sender_id)?.username||"Member");
+    box.appendChild(sender);
+    if(item.reply_to){
+        const original=LoadedMessages.find(x=>x.id===item.reply_to);
+        const reply=document.createElement("div"); reply.className="ReplyPreview";
+        reply.textContent=original?"↩ "+MessagePreview(original):"↩ Replied message";
+        reply.onclick=()=>JumpToMessage(item.reply_to); box.appendChild(reply);
+    }
+    const message=document.createElement("div"); message.className="Message";
+    RenderMessageContent(message,item);
+    if(item.edited){const e=document.createElement("span");e.className="Edited";e.textContent="(edited)";message.appendChild(e);}
+    box.appendChild(message);Messages.appendChild(box);
+    box.oncontextmenu=e=>{e.preventDefault();ShowMessageMenu(item,e.clientX,e.clientY);};
+}
+
+const V4OriginalLoadMessages=LoadMessages;
+LoadMessages=async function(searchText=""){
+    if(CurrentGroup){await LoadGroupMessagesV4(searchText);return;}
+    await V4OriginalLoadMessages(searchText);
+};
+
+const V4OriginalSendMessage=SendMessage;
+SendMessage=async function(){
+    if(!CurrentGroup){await V4OriginalSendMessage();return;}
+    const text=Input.value.trim();if(!text)return;
+    const {error}=await supabaseClient.from("messages").insert({
+        sender_id:CurrentUser.id,receiver_id:null,group_id:CurrentGroup.id,
+        content:text,reply_to:ReplyingTo?ReplyingTo.id:null
+    });
+    if(error){alert(error.message);return;}
+    Input.value="";AutoGrowInput();CancelReplyFunction();await LoadGroupMessagesV4();
+};
+
+const V4OriginalFileHandler=UploadAndSendFile;
+UploadAndSendFile=async function(){
+    if(!CurrentGroup){await V4OriginalFileHandler();return;}
+    const file=FileInput.files[0];FileInput.value="";
+    if(!file)return;
+    if(file.size>10*1024*1024)return alert("Files must be under 10 MB.");
+    const path=CurrentUser.id+"/"+crypto.randomUUID()+"-"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const {error:uploadError}=await supabaseClient.storage.from("attachments").upload(path,file);
+    if(uploadError)return alert(uploadError.message);
+    const {data}=supabaseClient.storage.from("attachments").getPublicUrl(path);
+    const attachment={name:file.name,type:file.type||"application/octet-stream",size:file.size,url:data.publicUrl};
+    const {error}=await supabaseClient.from("messages").insert({
+        sender_id:CurrentUser.id,receiver_id:null,group_id:CurrentGroup.id,
+        content:"FILE:"+JSON.stringify(attachment),reply_to:ReplyingTo?ReplyingTo.id:null
+    });
+    if(error)return alert(error.message);
+    CancelReplyFunction();await LoadGroupMessagesV4();
+};
+
+const V4OriginalSticker=SendSticker;
+SendSticker=async function(url){
+    if(!CurrentGroup){await V4OriginalSticker(url);return;}
+    const {error}=await supabaseClient.from("messages").insert({
+        sender_id:CurrentUser.id,receiver_id:null,group_id:CurrentGroup.id,
+        content:"STICKER:"+url,reply_to:ReplyingTo?ReplyingTo.id:null
+    });
+    if(error)return alert(error.message);
+    StickerPanel.style.display="none";CancelReplyFunction();await LoadGroupMessagesV4();
+};
+
+NewGroup?.addEventListener("click",async()=>{
+    if(!CurrentUser)return;
+    const name=prompt("Group name:");if(!name?.trim())return;
+    const names=(prompt("Member usernames, separated by commas:")||"").split(",").map(x=>x.trim()).filter(Boolean);
+    const {data:group,error}=await supabaseClient.from("groups")
+        .insert({name:name.trim(),owner_id:CurrentUser.id}).select("id,name,avatar_url,owner_id,created_at").single();
+    if(error)return alert(error.message);
+    const members=[{group_id:group.id,user_id:CurrentUser.id,role:"owner"}];
+    if(names.length){
+        const {data:profiles}=await supabaseClient.from("profiles").select("id,username").in("username",names);
+        for(const p of profiles||[])if(p.id!==CurrentUser.id)members.push({group_id:group.id,user_id:p.id,role:"member"});
+    }
+    const {error:memberError}=await supabaseClient.from("group_members").insert(members);
+    if(memberError){await supabaseClient.from("groups").delete().eq("id",group.id);return alert(memberError.message);}
+    await LoadGroupsV4();await OpenGroupV4(group);
+});
+
+const V4OriginalLoadUsers=LoadUsers;
+LoadUsers=async function(){await V4OriginalLoadUsers();await LoadGroupsV4();};
+
+const V4OriginalCheckUser=CheckUser;
+CheckUser=async function(showLoading=true){
+    await V4OriginalCheckUser(showLoading);
+    if(CurrentUser){await LoadGroupsV4();await SetupDeveloperV4();}
+};
+
+/* ================= V4 FRIENDS ================= */
+
+async function FriendStatusV4(userId){
+    if(!CurrentUser||userId===CurrentUser.id)return "self";
+    const {data:friend}=await supabaseClient.from("friendships").select("friend_id").eq("user_id",CurrentUser.id).eq("friend_id",userId).maybeSingle();
+    if(friend)return "friend";
+    const {data:out}=await supabaseClient.from("friend_requests").select("id,status").eq("sender_id",CurrentUser.id).eq("receiver_id",userId).eq("status","pending").maybeSingle();
+    if(out)return "sent";
+    const {data:incoming}=await supabaseClient.from("friend_requests").select("id,status").eq("sender_id",userId).eq("receiver_id",CurrentUser.id).eq("status","pending").maybeSingle();
+    if(incoming)return "incoming";
+    return "none";
+}
+
+async function SendFriendRequestV4(userId){
+    const status=await FriendStatusV4(userId);if(status!=="none")return;
+    const {error}=await supabaseClient.from("friend_requests").insert({sender_id:CurrentUser.id,receiver_id:userId,status:"pending"});
+    if(error)alert(error.message);else{alert("Friend request sent!");await LoadUsers();}
+}
+
+async function DecorateFriendsV4(){
+    document.querySelectorAll(".UserItem").forEach(item=>{
+        const userId=item.dataset.userId;
+        if(userId===CurrentUser?.id||item.querySelector(".FriendButton"))return;
+        const button=document.createElement("button");button.className="FriendButton";button.textContent="👥";
+        button.title="Add friend";button.onclick=async e=>{e.stopPropagation();await SendFriendRequestV4(userId);};
+        item.appendChild(button);
+    });
+}
+
+async function RefreshFriendButtonsV4(){
+    for(const item of document.querySelectorAll(".UserItem")){
+        const id=item.dataset.userId;const status=await FriendStatusV4(id);
+        const button=item.querySelector(".FriendButton");if(!button)continue;
+        button.textContent=status==="friend"?"✓":status==="sent"?"⏳":status==="incoming"?"📩":"👥";
+        button.title=status==="friend"?"Friend":status==="sent"?"Request sent":status==="incoming"?"Accept incoming request":"Add friend";
+        if(status==="incoming")button.onclick=async e=>{e.stopPropagation();await AcceptFriendRequestV4(id);};
+    }
+}
+
+async function AcceptFriendRequestV4(senderId){
+    const {data:req}=await supabaseClient.from("friend_requests").select("id").eq("sender_id",senderId).eq("receiver_id",CurrentUser.id).eq("status","pending").maybeSingle();
+    if(!req)return;
+    await supabaseClient.from("friend_requests").update({status:"accepted"}).eq("id",req.id);
+    await supabaseClient.from("friendships").upsert([{user_id:CurrentUser.id,friend_id:senderId},{user_id:senderId,friend_id:CurrentUser.id}],{onConflict:"user_id,friend_id"});
+    alert("Friend request accepted!");
+    await LoadUsers();
+}
+
+const V4DecorateLoad=LoadUsers;
+LoadUsers=async function(){await V4DecorateLoad();await DecorateFriendsV4();await RefreshFriendButtonsV4();};
+
+/* ================= V4 DEVELOPER PANEL ================= */
+
+async function IsDeveloperV4(){
+    if(!CurrentUser)return false;
+    const {data}=await supabaseClient.from("site_roles").select("role").eq("user_id",CurrentUser.id).maybeSingle();
+    return data?.role==="developer";
+}
+async function SetupDeveloperV4(){
+    if(DeveloperButton)DeveloperButton.style.display=(await IsDeveloperV4())?"block":"none";
+}
+DeveloperButton?.addEventListener("click",()=>{
+    DeveloperPanel.style.display="block";DeveloperVerify.style.display="block";DeveloperContent.style.display="none";
+    DeveloperPassword.value="";DeveloperVerifyStatus.textContent="";DeveloperVerified=false;
+});
+CloseDeveloper?.addEventListener("click",()=>{
+    DeveloperPanel.style.display="none";DeveloperVerified=false;DeveloperPassword.value="";
+});
+VerifyDeveloper?.addEventListener("click",async()=>{
+    if(!(await IsDeveloperV4()))return DeveloperVerifyStatus.textContent="Developer access denied.";
+    if(!DeveloperPassword.value)return DeveloperVerifyStatus.textContent="Enter your account password.";
+    const {data,error}=await supabaseClient.auth.signInWithPassword({email:CurrentUser.email,password:DeveloperPassword.value});
+    if(error||!data?.user||data.user.id!==CurrentUser.id)return DeveloperVerifyStatus.textContent="Verification failed.";
+    DeveloperVerified=true;DeveloperVerify.style.display="none";DeveloperContent.style.display="block";
+    DeveloperVerifyStatus.textContent="Verified.";await LoadDeveloperV4();
+});
+async function LoadDeveloperV4(){
+    if(!DeveloperVerified)return;
+    const [{data:users},{data:groups},{data:reports},{count:messageCount}]=await Promise.all([
+        supabaseClient.from("profiles").select("id,username,avatar_url"),
+        supabaseClient.from("groups").select("id,name,owner_id,created_at"),
+        supabaseClient.from("reports").select("*").order("created_at",{ascending:false}).limit(50),
+        supabaseClient.from("messages").select("*",{count:"exact",head:true})
+    ]);
+    DevStats.innerHTML='<div class="DevStat"><strong>'+(users?.length||0)+'</strong>Users</div><div class="DevStat"><strong>'+(messageCount||0)+'</strong>Messages</div><div class="DevStat"><strong>'+(groups?.length||0)+'</strong>Groups</div><div class="DevStat"><strong>'+OnlineUsers.size+'</strong>Online</div>';
+    const filter=DeveloperUserSearch.value.trim().toLowerCase();DeveloperUsers.replaceChildren();
+    for(const u of (users||[]).filter(x=>x.username.toLowerCase().includes(filter))){
+        const row=document.createElement("div");row.className="DevUser";row.textContent=u.username+(u.id===CurrentUser.id?" (you)":"");DeveloperUsers.appendChild(row);
+    }
+    DeveloperReports.replaceChildren();
+    for(const r of reports||[]){
+        const row=document.createElement("div");row.className="DevReport";row.textContent="Report "+r.id.slice(0,8)+" — "+r.reason+" — "+r.status;
+        if(r.status==="open"){const b=document.createElement("button");b.textContent="Resolve";b.onclick=async()=>{await supabaseClient.from("reports").update({status:"resolved"}).eq("id",r.id);await LoadDeveloperV4();};row.appendChild(b);}
+        DeveloperReports.appendChild(row);
+    }
+    const {data:settings}=await supabaseClient.from("site_settings").select("key,value");
+    const map=new Map((settings||[]).map(x=>[x.key,x.value]));
+    DeveloperSystemStatus.innerHTML="Database: 🟢 reachable<br>Realtime: "+(RealtimeStarted?"🟢 started":"🟡 not started")+"<br>Presence: "+(PresenceChannel?"🟢 started":"🟡 not started")+"<br>Groups: "+(map.get("groups_enabled")?.enabled===false?"🔴 disabled":"🟢 enabled")+"<br>Registration: "+(map.get("registration_enabled")?.enabled===false?"🔴 disabled":"🟢 enabled")+"<br>Maintenance: "+(map.get("maintenance_mode")?.enabled===true?"🟠 ON":"🟢 OFF");
+}
+RefreshDeveloper?.addEventListener("click",LoadDeveloperV4);
+DeveloperUserSearch?.addEventListener("input",()=>{clearTimeout(window.devTimer);window.devTimer=setTimeout(LoadDeveloperV4,150);});
+SendAnnouncement?.addEventListener("click",async()=>{
+    if(!DeveloperVerified)return;
+    const title=AnnouncementTitle.value.trim(),body=AnnouncementBody.value.trim();
+    if(!title||!body)return alert("Enter a title and message.");
+    const {error}=await supabaseClient.from("site_announcements").insert({title,body,created_by:CurrentUser.id,active:true});
+    if(error)return alert(error.message);AnnouncementTitle.value="";AnnouncementBody.value="";alert("Announcement published!");
+});
+async function ToggleSiteV4(key){
+    const {data}=await supabaseClient.from("site_settings").select("value").eq("key",key).maybeSingle();
+    const enabled=data?.value?.enabled===true;
+    const {error}=await supabaseClient.from("site_settings").upsert({key,value:{enabled:!enabled},updated_by:CurrentUser.id,updated_at:new Date().toISOString()});
+    if(error)alert(error.message);else await LoadDeveloperV4();
+}
+ToggleRegistration?.addEventListener("click",()=>ToggleSiteV4("registration_enabled"));
+ToggleGroups?.addEventListener("click",()=>ToggleSiteV4("groups_enabled"));
+MaintenanceToggle?.addEventListener("click",()=>ToggleSiteV4("maintenance_mode"));
+
+/* Group-aware realtime append */
+const V4Belongs=MessageBelongsToCurrentChat;
+MessageBelongsToCurrentChat=function(item){
+    if(CurrentGroup)return item.group_id===CurrentGroup.id;
+    return V4Belongs(item);
+};
+
+if(typeof SetupDeveloperV4==="function")SetupDeveloperV4();
+if(CurrentUser)LoadGroupsV4();
