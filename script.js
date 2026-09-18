@@ -888,7 +888,7 @@ async function UploadAndSendFile() {
 
     CancelReplyFunction();
     await LoadMessages();
-});
+}
 
 UploadSticker.addEventListener("click", UploadNewSticker);
 
