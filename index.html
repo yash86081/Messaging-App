@@ -18,17 +18,15 @@
 
 <div id="Auth">
     <h1>Messaging Project</h1>
-
     <div id="SignupPage">
         <h2>Sign Up</h2>
-        <input id="Username" placeholder="Username">
+        <input id="Username" placeholder="Username" maxlength="30">
         <input id="Email" placeholder="Email">
         <input id="Password" type="password" placeholder="Password">
         <button id="Signup">Sign Up</button>
         <p>Already have an account?</p>
         <button id="ShowLogin">Log In</button>
     </div>
-
     <div id="LoginPage">
         <h2>Log In</h2>
         <input id="LoginEmail" placeholder="Email">
@@ -48,9 +46,12 @@
     <div id="SettingsPanel">
         <h2>Settings</h2>
 
-        <h3>Profile Picture</h3>
+        <h3>Profile</h3>
+        <div id="SettingsAvatar"></div>
         <input id="AvatarFile" type="file" accept="image/*">
         <button id="UploadAvatar">Upload Picture</button>
+        <input id="ProfileUsername" placeholder="Username" maxlength="30">
+        <button id="SaveProfile">Save Profile</button>
 
         <h3>Theme</h3>
         <div id="ThemeButtons">
@@ -66,6 +67,9 @@
         <input id="StickerFile" type="file" accept="image/*">
         <button id="UploadSticker">Upload Sticker</button>
 
+        <h3>Notifications</h3>
+        <button id="EnableNotifications">Enable Notifications</button>
+
         <button id="Logout">Log Out</button>
         <button id="CloseSettings">Close</button>
     </div>
@@ -73,6 +77,7 @@
     <div id="Container">
         <div id="Chats">
             <h2>Chats</h2>
+            <input id="UserSearch" placeholder="Search messages...">
             <div id="UserList"></div>
         </div>
 
@@ -81,6 +86,7 @@
                 <div id="ChatAvatar"></div>
                 <div>
                     <h2 id="ChatTitle"></h2>
+                    <p id="ChatStatus"></p>
                 </div>
             </div>
 
@@ -97,12 +103,21 @@
             <div id="StickerPanel"></div>
 
             <div id="MessageBar">
+                <button id="FileButton">📎</button>
+                <input id="FileInput" type="file">
                 <button id="StickerButton">😀</button>
-                <input id="Input" placeholder="Type a message..." autocomplete="off">
+                <textarea id="Input" placeholder="Type a message..." autocomplete="off" rows="1"></textarea>
                 <button id="Send">Send</button>
             </div>
         </div>
     </div>
+</div>
+
+<div id="MessageMenu">
+    <button data-action="reply">↩ Reply</button>
+    <button data-action="copy">📋 Copy</button>
+    <button data-action="edit">✏️ Edit</button>
+    <button data-action="delete">🗑️ Delete</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
