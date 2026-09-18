@@ -480,3 +480,18 @@ body.theme-pink {
 .DevStat{padding:14px;background:var(--panel-2);border-radius:12px}.DevStat strong{display:block;font-size:22px}.DevUser,.DevReport{padding:12px;margin:7px 0;background:var(--panel-2);border-radius:10px}
 .DevUser{display:flex;justify-content:space-between;align-items:center;gap:10px}.DevControls{display:flex;flex-wrap:wrap;gap:8px}#DeveloperSystemStatus{color:var(--muted);line-height:1.8}#DeveloperVerifyStatus{min-height:18px;color:var(--muted)}
 @media(max-width:700px){#DeveloperPanel{inset:2%;padding:15px}.DevStats{grid-template-columns:repeat(2,1fr)}.DevUser{align-items:flex-start;flex-direction:column}}
+
+#TypingStatus{font-size:12px;color:var(--muted);min-height:14px}
+#FriendTools{margin-top:10px}#FriendRequestsButton{width:100%}
+#Announcements{margin-top:10px}.Announcement{padding:10px;margin:6px 0;background:var(--panel-2);border-radius:10px}.Announcement strong{display:block}.Announcement span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.FriendButton{flex-shrink:0;padding:6px 8px}.DevNotice{padding:10px;border-radius:10px;background:var(--panel-2);color:var(--muted);margin-bottom:12px}
+#ProfileModal,#FriendModal,#SearchModal,#ImageViewer{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px}
+.ModalBox{position:relative;width:min(500px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid #444;border-radius:18px;padding:24px}
+.ModalClose{position:absolute;right:12px;top:12px}.ProfileModalAvatar{margin:auto}
+#ProfileModalAvatar .Avatar,#ProfileModalAvatar .DefaultAvatar{width:90px;height:90px;margin:10px auto;font-size:48px}
+#ProfileModalName{text-align:center;margin:8px 0}.ProfileBio{text-align:center;color:var(--muted)}
+.RequestRow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px;margin:6px 0;background:var(--panel-2);border-radius:10px}
+.SearchResult{padding:10px;margin:6px 0;background:var(--panel-2);border-radius:10px;cursor:pointer}.SearchResult small{color:var(--muted)}
+#GlobalSearchInput{width:100%;padding:10px;margin:10px 0}
+#ImageViewer{z-index:7000}.ImageViewerImg,#ViewerImage{max-width:92vw;max-height:88vh;border-radius:12px}
+@media(max-width:700px){.FriendButton{padding:4px}.ModalBox{padding:15px}}
