@@ -754,8 +754,46 @@ async function MarkChatRead() {
     });
 
     if (error) console.log(error.message);
+    await UpdateSeenStatus();
 }
 
+function FormatSeenAgo(date) {
+    const seconds = Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / 1000));
+    if (seconds < 10) return "just now";
+    if (seconds < 60) return seconds + "s ago";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + "m ago";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + "h ago";
+    const days = Math.floor(hours / 24);
+    return days + "d ago";
+}
+
+async function UpdateSeenStatus() {
+    if (!CurrentUser || !CurrentChatUser) return;
+
+    const { data: read } = await supabaseClient
+        .from("message_reads")
+        .select("last_read_at")
+        .eq("user_id", CurrentChatUser.id)
+        .eq("other_user_id", CurrentUser.id)
+        .maybeSingle();
+
+    if (!read?.last_read_at) return;
+
+    const { data: lastSent } = await supabaseClient
+        .from("messages")
+        .select("created_at")
+        .eq("sender_id", CurrentUser.id)
+        .eq("receiver_id", CurrentChatUser.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (!lastSent || new Date(read.last_read_at) < new Date(lastSent.created_at)) return;
+
+    ChatStatus.textContent = "Seen " + FormatSeenAgo(read.last_read_at);
+}
 SettingsButton.addEventListener("click", () => {
     SettingsPanel.style.display = SettingsPanel.style.display === "block" ? "none" : "block";
     if (SettingsPanel.style.display === "block") SetSettingsProfile();
