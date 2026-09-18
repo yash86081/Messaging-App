@@ -795,7 +795,10 @@ SaveProfile.addEventListener("click", async () => {
 
 Logout.addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
-    if (PresenceChannel) await supabaseClient.removeChannel(PresenceChannel);
+    await supabaseClient.removeAllChannels();
+
+    RealtimeStarted = false;
+    PresenceChannel = null;
 
     CurrentUser = null;
     CurrentProfile = null;
