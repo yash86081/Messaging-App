@@ -83,6 +83,8 @@
             <div id="GroupTools"><button id="NewGroup">➕ New Group</button></div>
             <h3 class="ListHeading">Groups</h3>
             <div id="GroupList"></div>
+            <div id="FriendTools"><button id="FriendRequestsButton">🤝 Friend Requests</button></div>
+            <div id="Announcements"></div>
         </div>
 
         <div id="Chat">
@@ -91,6 +93,7 @@
                 <div>
                     <h2 id="ChatTitle"></h2>
                     <p id="ChatStatus"></p>
+                    <div id="TypingStatus"></div>
                 </div>
             </div>
 
@@ -141,10 +144,16 @@
         <h3>System</h3><div id="DeveloperSystemStatus"></div>
     </div>
 </div>
+<div id="ProfileModal"><div class="ModalBox"><button class="ModalClose" id="CloseProfile">✕</button><div id="ProfileModalAvatar"></div><h2 id="ProfileModalName"></h2><p id="ProfileModalBio"></p><div id="ProfileModalMeta"></div></div></div>
+<div id="FriendModal"><div class="ModalBox"><button class="ModalClose" id="CloseFriends">✕</button><h2>Friend Requests</h2><div id="FriendRequestsList"></div></div></div>
+<div id="SearchModal"><div class="ModalBox"><button class="ModalClose" id="CloseSearch">✕</button><h2>Search Messages</h2><input id="GlobalSearchInput" placeholder="Search all your messages"><div id="GlobalSearchResults"></div></div></div>
+<div id="ImageViewer"><button class="ModalClose" id="CloseImage">✕</button><img id="ViewerImage"></div>
 <div id="MessageMenu">
     <button data-action="reply">↩ Reply</button>
     <button data-action="copy">📋 Copy</button>
     <button data-action="edit">✏️ Edit</button>
+    <button data-action="pin">📌 Pin</button>
+    <button data-action="report">🚩 Report</button>
     <button data-action="delete">🗑️ Delete</button>
 </div>
 
