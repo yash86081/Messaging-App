@@ -71,6 +71,8 @@
         <button id="EnableNotifications">Enable Notifications</button>
 
         <button id="Logout">Log Out</button>
+        <button id="DeveloperButton" style="display:none;">🧑‍💻 Developer Panel</button>
+        <button id="Logout">Log Out</button>
         <button id="CloseSettings">Close</button>
     </div>
 
@@ -79,6 +81,9 @@
             <h2>Chats</h2>
             <input id="UserSearch" placeholder="Search messages...">
             <div id="UserList"></div>
+            <div id="GroupTools"><button id="NewGroup">➕ New Group</button></div>
+            <h3 class="ListHeading">Groups</h3>
+            <div id="GroupList"></div>
         </div>
 
         <div id="Chat">
@@ -113,6 +118,29 @@
     </div>
 </div>
 
+<div id="DeveloperPanel">
+    <div class="DeveloperHeader"><div><h2>Developer Dashboard</h2><p>Website administration</p></div><button id="CloseDeveloper">✕</button></div>
+    <div id="DeveloperVerify">
+        <h3>Developer Verification</h3>
+        <p>Re-enter your account password to unlock developer controls.</p>
+        <input id="DeveloperPassword" type="password" placeholder="Account password">
+        <button id="VerifyDeveloper">Verify</button>
+        <p id="DeveloperVerifyStatus"></p>
+    </div>
+    <div id="DeveloperContent" style="display:none;">
+        <div class="DevStats" id="DevStats"></div>
+        <h3>Users</h3><div class="DevRow"><input id="DeveloperUserSearch" placeholder="Search users"><button id="RefreshDeveloper">Refresh</button></div>
+        <div id="DeveloperUsers"></div>
+        <h3>Reports</h3><div id="DeveloperReports"></div>
+        <h3>Announcements</h3>
+        <input id="AnnouncementTitle" placeholder="Announcement title">
+        <textarea id="AnnouncementBody" placeholder="Announcement message"></textarea>
+        <button id="SendAnnouncement">Publish Announcement</button>
+        <h3>Website Controls</h3>
+        <div class="DevControls"><button id="ToggleRegistration">Toggle Registration</button><button id="ToggleGroups">Toggle Groups</button><button id="MaintenanceToggle">Toggle Maintenance</button></div>
+        <h3>System</h3><div id="DeveloperSystemStatus"></div>
+    </div>
+</div>
 <div id="MessageMenu">
     <button data-action="reply">↩ Reply</button>
     <button data-action="copy">📋 Copy</button>
