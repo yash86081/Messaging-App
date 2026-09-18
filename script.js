@@ -847,6 +847,13 @@ async function UploadProfilePicture() {
     alert("Profile picture updated!");
 }
 
+const OriginalOpenChatForSeen = OpenChat;
+OpenChat = async function(user) {
+    await OriginalOpenChatForSeen(user);
+    await UpdateSeenStatus();
+};
+
+
 UploadAvatar.addEventListener("click", UploadProfilePicture);
 
 SaveProfile.addEventListener("click", async () => {
