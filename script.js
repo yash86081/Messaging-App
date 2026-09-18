@@ -491,10 +491,30 @@ function AppendMessage(item) {
     box.dataset.messageId = item.id;
     box.classList.add(item.sender_id === CurrentUser.id ? "Sent" : "Received");
 
-    const sender = document.createElement("p");
-    sender.className = "SenderName";
-    sender.textContent = item.sender_id === CurrentUser.id ? "You" : CurrentChatUser.username;
-    box.appendChild(sender);
+    const index = LoadedMessages.findIndex(message => message.id === item.id);
+    const previous = index > 0 ? LoadedMessages[index - 1] : null;
+    const isNewStreak = !previous || previous.sender_id !== item.sender_id || !MessageBelongsToCurrentChat(previous);
+
+    if (isNewStreak) {
+        const senderRow = document.createElement("div");
+        senderRow.className = "SenderRow";
+
+        const avatar = document.createElement("div");
+        avatar.className = "StreakAvatar";
+
+        if (item.sender_id === CurrentUser.id) {
+            if (CurrentProfile?.avatar_url) SetImageAvatar(avatar, CurrentProfile.avatar_url, "StreakAvatar");
+            else SetDefaultAvatar(avatar);
+        } else {
+            if (CurrentChatUser?.avatar_url) SetImageAvatar(avatar, CurrentChatUser.avatar_url, "StreakAvatar");
+            else SetDefaultAvatar(avatar);
+        }
+
+        senderRow.appendChild(avatar);
+        box.appendChild(senderRow);
+    } else {
+        box.classList.add("ContinuedMessage");
+    }
 
     if (item.reply_to) {
         const original = LoadedMessages.find(message => message.id === item.reply_to);
