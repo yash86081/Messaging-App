@@ -1476,7 +1476,7 @@ async function ShowProfileV4(userId){
     const {data:p}=await supabaseClient.from("profiles").select("id,username,avatar_url,bio").eq("id",userId).maybeSingle();
     if(!p)return;
     ProfileModalAvatar.replaceChildren();
-    SetAvatarElement(ProfileModalAvatar,p.avatar_url);
+    if (p.avatar_url) SetImageAvatar(ProfileModalAvatar,p.avatar_url,"Avatar");\n    else SetDefaultAvatar(ProfileModalAvatar);
     ProfileModalName.textContent=p.username||"User";
     ProfileModalBio.textContent=p.bio||"No bio yet.";
     ProfileModalBio.className="ProfileBio";
