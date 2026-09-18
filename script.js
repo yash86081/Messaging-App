@@ -1651,3 +1651,51 @@ SetupDeveloperV4=async function(){await oldSetupDeveloper();};
         if(ProfileBio && CurrentProfile)ProfileBio.value=CurrentProfile.bio||"";
     }
 })();
+
+/* V4 settings enforcement and group controls */
+async function EnforceSiteSettingsV4(){
+    if(!CurrentUser)return;
+    const {data:settings}=await supabaseClient.from("site_settings").select("key,value");
+    const map=new Map((settings||[]).map(x=>[x.key,x.value]));
+    const groupsOn=map.get("groups_enabled")?.enabled!==false;
+    if(NewGroup)NewGroup.style.display=groupsOn?"block":"none";
+    const registrationOn=map.get("registration_enabled")?.enabled!==false;
+    if(SignupPage)SignupPage.style.display=registrationOn?(LoginPage.style.display==="none"?"block":SignupPage.style.display):"none";
+    await LoadAnnouncementsV4();
+}
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(session?.user){
+        setTimeout(async()=>{CurrentUser=session.user;await EnforceSiteSettingsV4();await CheckMaintenanceV4();},0);
+    }
+});
+
+async function LeaveGroupV4(){
+    if(!CurrentGroup||!CurrentUser)return;
+    if(CurrentGroup.owner_id===CurrentUser.id){
+        if(!confirm("Delete this group? As the owner, leaving will remove the group."))return;
+        const {error}=await supabaseClient.from("groups").delete().eq("id",CurrentGroup.id);
+        if(error)return alert(error.message);
+    }else{
+        if(!confirm("Leave this group?"))return;
+        const {error}=await supabaseClient.from("group_members").delete().eq("group_id",CurrentGroup.id).eq("user_id",CurrentUser.id);
+        if(error)return alert(error.message);
+    }
+    CurrentGroup=null;Messages.replaceChildren();await LoadGroupsV4();
+}
+function AddGroupControlsV4Final(){
+    let b=document.getElementById("GroupManageButton");
+    if(!b)return;
+    b.textContent=CurrentGroup&&CurrentGroup.owner_id===CurrentUser?.id?"👥":"🚪";
+    b.title=CurrentGroup&&CurrentGroup.owner_id===CurrentUser?.id?"Add group member":"Leave group";
+    b.onclick=CurrentGroup&&CurrentGroup.owner_id===CurrentUser?.id?AddGroupMemberV4:LeaveGroupV4;
+}
+const previousAddGroupControls=AddGroupControlsV4;
+AddGroupControlsV4=()=>{previousAddGroupControls();AddGroupControlsV4Final();};
+
+const previousNewGroup=NewGroup?.onclick;
+if(NewGroup)NewGroup.addEventListener("click",async e=>{
+    const {data}=await supabaseClient.from("site_settings").select("value").eq("key","groups_enabled").maybeSingle();
+    if(data?.value?.enabled===false){e.stopImmediatePropagation();alert("Groups are currently disabled.");}
+},true);
+
+EnforceSiteSettingsV4();
