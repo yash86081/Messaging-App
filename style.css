@@ -1,32 +1,17 @@
-/* =========================
-   GENERAL
-========================= */
-
 :root {
 
+    --main: #333;
+    --main-dark: #222;
     --background: #111;
     --panel: #181818;
-    --panel2: #222;
-    --border: #444;
-
     --text: white;
     --muted: #aaa;
-
-    --sent: #333;
-    --received: #222;
-
-    --button: #333;
-    --button-hover: #444;
-
-    --input: #222;
 
 }
 
 
 * {
-
     box-sizing: border-box;
-
 }
 
 
@@ -40,21 +25,11 @@ body {
 
     color: var(--text);
 
-    transition: background 0.3s, color 0.3s;
-
-}
-
-
-button,
-input {
-
-    font-family: inherit;
-
 }
 
 
 /* =========================
-   LOADING SCREEN
+   LOADING
 ========================= */
 
 #LoadingScreen {
@@ -63,54 +38,66 @@ input {
 
     inset: 0;
 
+    background: #111;
+
     display: flex;
 
     justify-content: center;
 
     align-items: center;
 
-    background: var(--background);
-
     z-index: 9999;
 
 }
 
 
-.LoadingBox {
+#LoadingBox {
+
+    width: 300px;
 
     text-align: center;
 
 }
 
 
-.LoadingSpinner {
+#LoadingBox h1 {
 
-    width: 35px;
-
-    height: 35px;
-
-    margin: 20px auto;
-
-    border: 4px solid #555;
-
-    border-top: 4px solid white;
-
-    border-radius: 50%;
-
-    animation: spin 0.8s linear infinite;
+    margin-bottom: 10px;
 
 }
 
 
-@keyframes spin {
+#LoadingText {
 
-    from {
-        transform: rotate(0deg);
-    }
+    color: #aaa;
 
-    to {
-        transform: rotate(360deg);
-    }
+}
+
+
+#LoadingBar {
+
+    width: 100%;
+
+    height: 5px;
+
+    background: #333;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+
+#LoadingProgress {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: var(--main);
+
+    transition: width 0.2s;
 
 }
 
@@ -121,67 +108,97 @@ input {
 
 #Auth {
 
-    text-align: center;
+    min-height: 100vh;
 
-    padding-top: 50px;
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
 
 }
 
 
 #Auth h1 {
 
-    font-size: 35px;
+    margin-bottom: 30px;
+
+}
+
+
+#SignupPage,
+#LoginPage {
+
+    width: 320px;
+
+    padding: 25px;
+
+    background: var(--panel);
+
+    border-radius: 15px;
+
+    text-align: center;
+
+}
+
+
+#LoginPage {
+
+    display: none;
 
 }
 
 
 #Auth input {
 
-    display: block;
-
-    width: 250px;
+    width: 100%;
 
     height: 40px;
 
-    margin: 10px auto;
+    margin: 7px 0;
 
-    padding: 8px;
+    padding: 10px;
 
-    border: 1px solid var(--border);
+    border: none;
 
-    border-radius: 6px;
+    border-radius: 8px;
 
-    background: var(--input);
+    background: #292929;
 
-    color: var(--text);
-
-    font-size: 16px;
+    color: white;
 
 }
 
 
-#Auth button {
-
-    height: 38px;
-
-    padding: 0 18px;
+button {
 
     border: none;
 
-    border-radius: 6px;
+    border-radius: 8px;
 
-    background: var(--button);
+    padding: 9px 13px;
 
-    color: var(--text);
+    background: var(--main);
+
+    color: white;
 
     cursor: pointer;
 
 }
 
 
-#Auth button:hover {
+button:hover {
 
-    background: var(--button-hover);
+    filter: brightness(1.25);
+
+}
+
+
+#Auth button {
+
+    margin-top: 5px;
 
 }
 
@@ -192,24 +209,28 @@ input {
 
 #ChatApp {
 
-    padding: 15px;
+    display: none;
+
+    height: 100vh;
 
 }
 
 
-/* =========================
-   TOP BAR
-========================= */
-
 #TopBar {
+
+    height: 65px;
 
     display: flex;
 
-    justify-content: space-between;
-
     align-items: center;
 
-    margin-bottom: 15px;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    background: var(--panel);
+
+    border-bottom: 1px solid #333;
 
 }
 
@@ -221,142 +242,22 @@ input {
 }
 
 
-#TopButtons {
+#SettingsButton {
 
-    display: flex;
-
-    gap: 8px;
-
-}
-
-
-#TopButtons button {
-
-    height: 35px;
-
-    padding: 0 12px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    background: var(--button);
-
-    color: var(--text);
-
-    cursor: pointer;
-
-}
-
-
-#TopButtons button:hover {
-
-    background: var(--button-hover);
+    font-size: 20px;
 
 }
 
 
 /* =========================
-   SETTINGS
-========================= */
-
-#SettingsPanel {
-
-    display: none;
-
-    position: fixed;
-
-    top: 60px;
-
-    right: 20px;
-
-    width: 300px;
-
-    padding: 20px;
-
-    background: var(--panel);
-
-    border: 1px solid var(--border);
-
-    border-radius: 12px;
-
-    z-index: 1000;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-
-}
-
-
-#SettingsPanel input {
-
-    width: 100%;
-
-    height: 35px;
-
-    margin: 8px 0 12px;
-
-    padding: 8px;
-
-    background: var(--input);
-
-    color: var(--text);
-
-    border: 1px solid var(--border);
-
-    border-radius: 6px;
-
-}
-
-
-#SettingsPanel button {
-
-    margin: 4px;
-
-    padding: 8px 12px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    background: var(--button);
-
-    color: var(--text);
-
-    cursor: pointer;
-
-}
-
-
-#SettingsPanel button:hover {
-
-    background: var(--button-hover);
-
-}
-
-
-/* =========================
-   MAIN CONTAINER
+   CHAT CONTAINER
 ========================= */
 
 #Container {
 
     display: flex;
 
-    width: 95%;
-
-    max-width: 1300px;
-
-    height: 650px;
-
-    margin: auto;
-
-    border: 1px solid var(--border);
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    background: var(--panel);
+    height: calc(100vh - 65px);
 
 }
 
@@ -367,25 +268,49 @@ input {
 
 #Chats {
 
-    width: 270px;
+    width: 280px;
 
-    padding: 15px;
+    background: #151515;
 
-    border-right: 1px solid var(--border);
+    border-right: 1px solid #333;
 
     overflow-y: auto;
+
+    padding: 15px;
 
 }
 
 
 #Chats h2 {
 
-    margin-top: 0;
+    margin-top: 5px;
 
 }
 
 
-.User {
+#UserList p {
+
+    margin: 5px 0;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: #202020;
+
+}
+
+
+#UserList p:hover {
+
+    background: #292929;
+
+}
+
+
+.UserItem {
 
     display: flex;
 
@@ -393,60 +318,14 @@ input {
 
     gap: 10px;
 
-    padding: 10px;
-
-    margin: 5px 0;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    transition: background 0.2s;
-
 }
 
 
-.User:hover {
+.UserAvatar {
 
-    background: var(--panel2);
+    width: 38px;
 
-}
-
-
-.UserUnread {
-
-    margin-left: auto;
-
-    min-width: 22px;
-
-    height: 22px;
-
-    padding: 2px 6px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 20px;
-
-    background: #777;
-
-    font-size: 12px;
-
-}
-
-
-/* =========================
-   AVATARS
-========================= */
-
-.Avatar {
-
-    width: 40px;
-
-    height: 40px;
+    height: 38px;
 
     border-radius: 50%;
 
@@ -457,30 +336,19 @@ input {
 }
 
 
-.SmallAvatar {
-
-    width: 35px;
-
-    height: 35px;
-
-}
-
-
 /* =========================
    CHAT
 ========================= */
 
 #Chat {
 
-    position: relative;
-
     flex: 1;
-
-    min-width: 0;
 
     display: flex;
 
     flex-direction: column;
+
+    min-width: 0;
 
 }
 
@@ -489,25 +357,22 @@ input {
 
     height: 65px;
 
-    padding: 10px 15px;
-
-    border-bottom: 1px solid var(--border);
-
-}
-
-
-#ChatUserInfo {
-
     display: flex;
 
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
+
+    padding: 10px 15px;
+
+    background: #171717;
+
+    border-bottom: 1px solid #333;
 
 }
 
 
-#ChatTitle {
+#ChatHeader h2 {
 
     margin: 0;
 
@@ -522,7 +387,20 @@ input {
 
     color: var(--muted);
 
-    min-height: 14px;
+}
+
+
+.Avatar {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    background: #333;
 
 }
 
@@ -542,54 +420,11 @@ input {
 }
 
 
-#EmptyChat {
-
-    color: var(--muted);
-
-    text-align: center;
-
-    margin-top: 50px;
-
-}
-
-
 .MessageBox {
-
-    position: relative;
 
     max-width: 65%;
 
     margin: 10px 0;
-
-    animation: messageAppear 0.2s ease;
-
-}
-
-
-@keyframes messageAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateY(8px);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: translateY(0);
-
-    }
-
-}
-
-
-.NoEffects .MessageBox {
-
-    animation: none;
 
 }
 
@@ -620,7 +455,7 @@ input {
 
     font-weight: bold;
 
-    color: var(--muted);
+    color: #aaa;
 
 }
 
@@ -635,141 +470,82 @@ input {
 
     border-radius: 15px;
 
-    font-size: 15px;
-
     word-break: break-word;
-
-    background: var(--received);
 
 }
 
 
 .Sent .Message {
 
-    background: var(--sent);
+    background: var(--main);
 
 }
 
 
-.Edited {
+.Received .Message {
 
-    margin-left: 5px;
-
-    font-size: 10px;
-
-    color: var(--muted);
+    background: var(--main-dark);
 
 }
 
 
-/* =========================
-   REPLY PREVIEW
-========================= */
+.MessageImage {
+
+    max-width: 180px;
+
+    max-height: 180px;
+
+    border-radius: 12px;
+
+    display: block;
+
+}
+
 
 .ReplyPreview {
 
-    margin: 5px 0;
-
-    padding: 6px 10px;
-
-    border-left: 3px solid #888;
-
-    background: var(--panel2);
-
-    border-radius: 5px;
-
     font-size: 12px;
 
-    color: var(--muted);
+    color: #aaa;
+
+    border-left: 3px solid var(--main);
+
+    padding-left: 7px;
+
+    margin-bottom: 5px;
 
 }
 
-
-/* =========================
-   MESSAGE ACTIONS
-========================= */
 
 .MessageActions {
 
-    display: none;
+    margin-top: 4px;
+
+    display: flex;
 
     gap: 4px;
 
-    margin-top: 5px;
-
-}
-
-
-.MessageBox:hover .MessageActions {
-
-    display: flex;
+    justify-content: flex-end;
 
 }
 
 
 .MessageActions button {
 
-    border: none;
+    font-size: 11px;
 
     padding: 4px 7px;
 
-    border-radius: 5px;
-
-    background: var(--button);
-
-    color: var(--text);
-
-    font-size: 11px;
-
-    cursor: pointer;
-
 }
 
 
-.MessageActions button:hover {
+.Edited {
 
-    background: var(--button-hover);
+    font-size: 10px;
 
-}
+    color: #888;
 
-
-/* =========================
-   REACTIONS
-========================= */
-
-.Reactions {
-
-    display: flex;
-
-    gap: 3px;
-
-    margin-top: 5px;
-
-}
-
-
-.ReactionButton {
-
-    border: none;
-
-    padding: 3px 7px;
-
-    border-radius: 12px;
-
-    background: var(--panel2);
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 13px;
-
-}
-
-
-.ReactionButton:hover {
-
-    transform: scale(1.1);
+    margin-left: 5px;
 
 }
 
@@ -782,41 +558,22 @@ input {
 
     display: none;
 
-    align-items: center;
+    padding: 8px 12px;
+
+    background: #1b1b1b;
+
+    border-top: 1px solid #333;
 
     justify-content: space-between;
 
-    padding: 8px 15px;
-
-    border-top: 1px solid var(--border);
-
-    background: var(--panel2);
-
 }
 
 
-#ReplyBar p {
+#ReplyText {
 
-    margin: 3px 0 0;
+    margin: 3px 0;
 
-    color: var(--muted);
-
-    font-size: 13px;
-
-}
-
-
-#CancelReply {
-
-    border: none;
-
-    background: transparent;
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 18px;
+    color: #aaa;
 
 }
 
@@ -829,11 +586,11 @@ input {
 
     display: flex;
 
-    gap: 10px;
+    gap: 8px;
 
     padding: 10px;
 
-    border-top: 1px solid var(--border);
+    background: var(--panel);
 
 }
 
@@ -846,15 +603,15 @@ input {
 
     height: 40px;
 
-    padding: 8px 12px;
+    padding: 10px;
 
-    border: 1px solid var(--border);
+    border: none;
 
     border-radius: 8px;
 
-    background: var(--input);
+    background: #292929;
 
-    color: var(--text);
+    color: white;
 
     font-size: 16px;
 
@@ -863,26 +620,202 @@ input {
 
 #Send {
 
-    width: 80px;
+    width: 75px;
 
-    height: 40px;
+}
 
-    border: none;
 
-    border-radius: 8px;
+#StickerButton {
 
-    background: var(--button);
+    width: 45px;
 
-    color: var(--text);
+    font-size: 18px;
+
+}
+
+
+/* =========================
+   STICKERS
+========================= */
+
+#StickerPanel {
+
+    display: none;
+
+    max-height: 160px;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    background: #191919;
+
+    border-top: 1px solid #333;
+
+}
+
+
+.StickerChoice {
+
+    width: 60px;
+
+    height: 60px;
+
+    object-fit: contain;
+
+    padding: 5px;
+
+    margin: 4px;
+
+    border-radius: 10px;
 
     cursor: pointer;
 
 }
 
 
-#Send:hover {
+.StickerChoice:hover {
 
-    background: var(--button-hover);
+    background: #292929;
+
+}
+
+
+.StickerMessage {
+
+    width: 130px;
+
+    max-height: 130px;
+
+    object-fit: contain;
+
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+#SettingsPanel {
+
+    display: none;
+
+    position: fixed;
+
+    right: 20px;
+
+    top: 75px;
+
+    width: 300px;
+
+    max-height: calc(100vh - 95px);
+
+    overflow-y: auto;
+
+    padding: 20px;
+
+    background: #181818;
+
+    border: 1px solid #333;
+
+    border-radius: 15px;
+
+    z-index: 1000;
+
+}
+
+
+#SettingsPanel input {
+
+    width: 100%;
+
+    margin-bottom: 10px;
+
+}
+
+
+#SettingsPanel button {
+
+    margin: 4px 2px;
+
+}
+
+
+#ThemeButtons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+}
+
+
+/* =========================
+   THEMES
+========================= */
+
+body.theme-black {
+
+    --main: #333;
+
+    --main-dark: #222;
+
+    --background: #111;
+
+}
+
+
+body.theme-blue {
+
+    --main: #1769aa;
+
+    --main-dark: #12324a;
+
+    --background: #081118;
+
+}
+
+
+body.theme-yellow {
+
+    --main: #b68b00;
+
+    --main-dark: #403600;
+
+    --background: #151200;
+
+}
+
+
+body.theme-red {
+
+    --main: #a51d2d;
+
+    --main-dark: #42151b;
+
+    --background: #15090b;
+
+}
+
+
+body.theme-green {
+
+    --main: #218739;
+
+    --main-dark: #123d1c;
+
+    --background: #08140b;
+
+}
+
+
+body.theme-pink {
+
+    --main: #b83280;
+
+    --main-dark: #42132f;
+
+    --background: #150911;
 
 }
 
@@ -893,100 +826,41 @@ input {
 
 @media (max-width: 700px) {
 
-    #ChatApp {
-
-        padding: 5px;
-
-    }
-
-
-    #TopBar {
-
-        padding: 5px;
-
-    }
-
-
-    #TopBar h1 {
-
-        font-size: 22px;
-
-    }
-
-
-    #Container {
-
-        width: 100%;
-
-        height: calc(100vh - 70px);
-
-        border-radius: 0;
-
-    }
-
-
     #Chats {
 
         width: 90px;
 
-        padding: 5px;
+        padding: 8px;
 
     }
 
 
     #Chats h2 {
 
-        font-size: 15px;
+        font-size: 14px;
 
     }
 
 
-    .User {
+    #UserList p {
 
-        justify-content: center;
-
-        padding: 7px 2px;
+        padding: 7px;
 
     }
 
 
-    .User span {
+    .UserItem span {
 
         display: none;
 
     }
 
 
-    .SmallAvatar {
+    .UserAvatar {
 
-        width: 38px;
+        width: 42px;
 
-        height: 38px;
-
-    }
-
-
-    .UserUnread {
-
-        position: absolute;
-
-        margin-left: 45px;
-
-        margin-top: -30px;
-
-    }
-
-
-    #ChatHeader {
-
-        height: 60px;
-
-    }
-
-
-    #Messages {
-
-        padding: 10px;
+        height: 42px;
 
     }
 
@@ -998,59 +872,14 @@ input {
     }
 
 
-    #Input {
-
-        font-size: 14px;
-
-    }
-
-
-    #Send {
-
-        width: 65px;
-
-    }
-
-
     #SettingsPanel {
 
-        top: 55px;
+        left: 10px;
 
-        right: 5px;
+        right: 10px;
 
-        width: calc(100% - 10px);
+        width: auto;
 
     }
-
-}
-
-
-/* =========================
-   LIGHT THEME
-========================= */
-
-body.LightTheme {
-
-    --background: #f2f2f2;
-
-    --panel: #ffffff;
-
-    --panel2: #e8e8e8;
-
-    --border: #cccccc;
-
-    --text: #111;
-
-    --muted: #666;
-
-    --sent: #d8d8d8;
-
-    --received: #eeeeee;
-
-    --button: #dddddd;
-
-    --button-hover: #cccccc;
-
-    --input: #ffffff;
 
 }

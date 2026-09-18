@@ -6,11 +6,11 @@
 
     <meta charset="UTF-8">
 
-    <link rel="stylesheet" href="style.css">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Messaging Project</title>
+
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -20,11 +20,15 @@
 
     <div id="LoadingScreen">
 
-        <div class="LoadingBox">
+        <div id="LoadingBox">
 
-            <h1>Loading...</h1>
+            <h1>Messaging</h1>
 
-            <div class="LoadingSpinner"></div>
+            <p id="LoadingText">Loading...</p>
+
+            <div id="LoadingBar">
+                <div id="LoadingProgress"></div>
+            </div>
 
         </div>
 
@@ -58,7 +62,7 @@
 
             <p>Already have an account?</p>
 
-            <button id="ShowLogin">Log in</button>
+            <button id="ShowLogin">Log In</button>
 
         </div>
 
@@ -69,10 +73,7 @@
 
             <h2>Log In</h2>
 
-            <input
-                id="LoginEmail"
-                placeholder="Email"
-            >
+            <input id="LoginEmail" placeholder="Email">
 
             <input
                 id="LoginPassword"
@@ -84,7 +85,7 @@
 
             <p>Don't have an account?</p>
 
-            <button id="ShowSignup">Sign up</button>
+            <button id="ShowSignup">Sign Up</button>
 
         </div>
 
@@ -95,19 +96,14 @@
 
     <div id="ChatApp">
 
+
         <!-- TOP BAR -->
 
         <div id="TopBar">
 
             <h1>Messaging</h1>
 
-            <div id="TopButtons">
-
-                <button id="SettingsButton">⚙️</button>
-
-                <button id="Logout">Log Out</button>
-
-            </div>
+            <button id="SettingsButton">⚙️</button>
 
         </div>
 
@@ -118,29 +114,67 @@
 
             <h2>Settings</h2>
 
-            <label>Profile picture URL</label>
+
+            <h3>Profile Picture</h3>
 
             <input
-                id="AvatarInput"
-                placeholder="Paste image URL"
+                id="AvatarFile"
+                type="file"
+                accept="image/*"
             >
 
-            <button id="SaveAvatar">Save Profile Picture</button>
+            <button id="UploadAvatar">
+                Upload Picture
+            </button>
 
 
             <h3>Theme</h3>
 
-            <button id="DarkTheme">Dark</button>
+            <div id="ThemeButtons">
 
-            <button id="LightTheme">Light</button>
+                <button data-theme="black">
+                    ⚫ Black
+                </button>
+
+                <button data-theme="blue">
+                    🔵 Blue
+                </button>
+
+                <button data-theme="yellow">
+                    🟡 Yellow
+                </button>
+
+                <button data-theme="red">
+                    🔴 Red
+                </button>
+
+                <button data-theme="green">
+                    🟢 Green
+                </button>
+
+                <button data-theme="pink">
+                    🩷 Pink
+                </button>
+
+            </div>
 
 
-            <h3>Message Effects</h3>
+            <h3>Stickers</h3>
 
-            <button id="EffectsOn">Effects On</button>
+            <input
+                id="StickerFile"
+                type="file"
+                accept="image/*"
+            >
 
-            <button id="EffectsOff">Effects Off</button>
+            <button id="UploadSticker">
+                Upload Sticker
+            </button>
 
+
+            <button id="Logout">
+                Log Out
+            </button>
 
             <button id="CloseSettings">
                 Close
@@ -149,12 +183,12 @@
         </div>
 
 
-        <!-- MAIN -->
+        <!-- MAIN CHAT AREA -->
 
         <div id="Container">
 
 
-            <!-- CHAT LIST -->
+            <!-- USER LIST -->
 
             <div id="Chats">
 
@@ -169,26 +203,25 @@
 
             <div id="Chat">
 
+
+                <!-- CHAT HEADER -->
+
                 <div id="ChatHeader">
 
-                    <div id="ChatUserInfo">
+                    <img
+                        id="ChatAvatar"
+                        class="Avatar"
+                        src=""
+                        alt=""
+                    >
 
-                        <img
-                            id="ChatAvatar"
-                            class="Avatar"
-                            src=""
-                            alt=""
-                        >
+                    <div>
 
-                        <div>
+                        <h2 id="ChatTitle">
+                            Select a chat
+                        </h2>
 
-                            <h2 id="ChatTitle">
-                                Select a chat
-                            </h2>
-
-                            <p id="TypingIndicator"></p>
-
-                        </div>
+                        <p id="TypingIndicator"></p>
 
                     </div>
 
@@ -206,7 +239,7 @@
                 </div>
 
 
-                <!-- REPLY BAR -->
+                <!-- REPLY -->
 
                 <div id="ReplyBar">
 
@@ -227,9 +260,18 @@
                 </div>
 
 
-                <!-- MESSAGE INPUT -->
+                <!-- STICKERS -->
+
+                <div id="StickerPanel"></div>
+
+
+                <!-- MESSAGE BAR -->
 
                 <div id="MessageBar">
+
+                    <button id="StickerButton">
+                        😀
+                    </button>
 
                     <input
                         id="Input"
@@ -249,6 +291,8 @@
 
     </div>
 
+
+    <!-- SUPABASE -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
