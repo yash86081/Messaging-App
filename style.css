@@ -253,6 +253,8 @@ input, textarea {
     text-align: left;
 }
 
+.SenderRow{height:28px;display:flex;align-items:center;margin-bottom:3px}.Sent .SenderRow{justify-content:flex-end}.Received .SenderRow{justify-content:flex-start}.StreakAvatar{width:26px;height:26px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}.StreakAvatar img{width:100%;height:100%;object-fit:cover}.ContinuedMessage{margin-top:2px}.ContinuedMessage .Message{border-radius:8px}
+
 .SenderName {
     margin: 0 5px 4px;
     font-size: 12px;
