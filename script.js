@@ -1,1935 +1,805 @@
-const SUPABASE_URL =
-    "https://nmlhudteeetfaucncgdc.supabase.co"
-
-const SUPABASE_KEY =
-    "sb_publishable_bfBMrwL2YDj53tbPxxu-Ow_bykMyc-h"
-
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    )
-
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const LoadingScreen =
-    document.getElementById("LoadingScreen")
-
-const LoadingText =
-    document.getElementById("LoadingText")
-
-const LoadingProgress =
-    document.getElementById("LoadingProgress")
-
-
-const Auth =
-    document.getElementById("Auth")
-
-const ChatApp =
-    document.getElementById("ChatApp")
-
-
-const SignupPage =
-    document.getElementById("SignupPage")
-
-const LoginPage =
-    document.getElementById("LoginPage")
-
-
-const Username =
-    document.getElementById("Username")
-
-const Email =
-    document.getElementById("Email")
-
-const Password =
-    document.getElementById("Password")
-
-
-const LoginEmail =
-    document.getElementById("LoginEmail")
-
-const LoginPassword =
-    document.getElementById("LoginPassword")
-
-
-const Signup =
-    document.getElementById("Signup")
-
-const Login =
-    document.getElementById("Login")
-
-
-const ShowLogin =
-    document.getElementById("ShowLogin")
-
-const ShowSignup =
-    document.getElementById("ShowSignup")
-
-
-const UserList =
-    document.getElementById("UserList")
-
-
-const ChatTitle =
-    document.getElementById("ChatTitle")
-
-const ChatAvatar =
-    document.getElementById("ChatAvatar")
-
-
-const Messages =
-    document.getElementById("Messages")
-
-
-const Input =
-    document.getElementById("Input")
-
-const Send =
-    document.getElementById("Send")
-
-
-const Logout =
-    document.getElementById("Logout")
-
-
-const SettingsButton =
-    document.getElementById("SettingsButton")
-
-const SettingsPanel =
-    document.getElementById("SettingsPanel")
-
-const CloseSettings =
-    document.getElementById("CloseSettings")
-
-
-const AvatarFile =
-    document.getElementById("AvatarFile")
-
-const UploadAvatar =
-    document.getElementById("UploadAvatar")
-
-
-const StickerFile =
-    document.getElementById("StickerFile")
-
-const UploadSticker =
-    document.getElementById("UploadSticker")
-
-
-const StickerButton =
-    document.getElementById("StickerButton")
-
-const StickerPanel =
-    document.getElementById("StickerPanel")
-
-
-const ReplyBar =
-    document.getElementById("ReplyBar")
-
-const ReplyName =
-    document.getElementById("ReplyName")
-
-const ReplyText =
-    document.getElementById("ReplyText")
-
-const CancelReply =
-    document.getElementById("CancelReply")
-
-
-const TypingIndicator =
-    document.getElementById("TypingIndicator")
-
-
-
-/* =========================
-   VARIABLES
-========================= */
-
-let CurrentChatUser = null
-
-let CurrentUser = null
-
-let ReplyingTo = null
-
-let UsersLoaded = false
-
-let StickersLoaded = false
-
-let LoadingFinished = false
-
-
-
-/* =========================
-   LOADING SCREEN
-========================= */
+const SUPABASE_URL = "https://nmlhudteeetfaucncgdc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bfBMrwL2YDj53tbPxxu-Ow_bykMyc-h";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const LoadingScreen = document.getElementById("LoadingScreen");
+const LoadingText = document.getElementById("LoadingText");
+const LoadingProgress = document.getElementById("LoadingProgress");
+
+const Auth = document.getElementById("Auth");
+const ChatApp = document.getElementById("ChatApp");
+const SignupPage = document.getElementById("SignupPage");
+const LoginPage = document.getElementById("LoginPage");
+
+const Username = document.getElementById("Username");
+const Email = document.getElementById("Email");
+const Password = document.getElementById("Password");
+const LoginEmail = document.getElementById("LoginEmail");
+const LoginPassword = document.getElementById("LoginPassword");
+
+const Signup = document.getElementById("Signup");
+const Login = document.getElementById("Login");
+const ShowLogin = document.getElementById("ShowLogin");
+const ShowSignup = document.getElementById("ShowSignup");
+
+const UserList = document.getElementById("UserList");
+const ChatTitle = document.getElementById("ChatTitle");
+const ChatAvatar = document.getElementById("ChatAvatar");
+const Messages = document.getElementById("Messages");
+
+const Input = document.getElementById("Input");
+const Send = document.getElementById("Send");
+const StickerButton = document.getElementById("StickerButton");
+const StickerPanel = document.getElementById("StickerPanel");
+
+const ReplyBar = document.getElementById("ReplyBar");
+const ReplyName = document.getElementById("ReplyName");
+const ReplyText = document.getElementById("ReplyText");
+const CancelReply = document.getElementById("CancelReply");
+
+const SettingsButton = document.getElementById("SettingsButton");
+const SettingsPanel = document.getElementById("SettingsPanel");
+const CloseSettings = document.getElementById("CloseSettings");
+const Logout = document.getElementById("Logout");
+
+const AvatarFile = document.getElementById("AvatarFile");
+const UploadAvatar = document.getElementById("UploadAvatar");
+const StickerFile = document.getElementById("StickerFile");
+const UploadSticker = document.getElementById("UploadSticker");
+
+let CurrentUser = null;
+let CurrentChatUser = null;
+let ReplyingTo = null;
+let RealtimeStarted = false;
 
 function SetLoading(text, progress) {
-
-    LoadingText.textContent = text
-
-    LoadingProgress.style.width =
-        progress + "%"
-
+    LoadingText.textContent = text;
+    LoadingProgress.style.width = progress + "%";
 }
-
 
 function HideLoading() {
-
-    LoadingScreen.style.display = "none"
-
-    LoadingFinished = true
-
+    LoadingScreen.style.display = "none";
 }
 
-
-
-/* =========================
-   PAGE SWITCHING
-========================= */
-
-ShowLogin.addEventListener(
-    "click",
-    function() {
-
-        SignupPage.style.display = "none"
-
-        LoginPage.style.display = "block"
-
-    }
-)
-
-
-ShowSignup.addEventListener(
-    "click",
-    function() {
-
-        LoginPage.style.display = "none"
-
-        SignupPage.style.display = "block"
-
-    }
-)
-
-
-
-/* =========================
-   SIGN UP
-========================= */
-
-Signup.addEventListener(
-    "click",
-    async function() {
-
-        if (
-            Username.value.trim() === "" ||
-            Email.value.trim() === "" ||
-            Password.value === ""
-        ) {
-
-            alert("Fill everything in.")
-
-            return
-
-        }
-
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient.auth.signUp({
-
-            email: Email.value.trim(),
-
-            password: Password.value
-
+function WithTimeout(promise, milliseconds) {
+    return Promise.race([
+        promise,
+        new Promise(resolve => {
+            setTimeout(() => resolve({ timedOut: true }), milliseconds);
         })
-
-
-        if (error) {
-
-            alert(error.message)
-
-            return
-
-        }
-
-
-        const user = data.user
-
-
-        if (!user) {
-
-            alert("Account creation failed.")
-
-            return
-
-        }
-
-
-        const {
-            error: profileError
-        } =
-        await supabaseClient
-            .from("profiles")
-            .insert({
-
-                id: user.id,
-
-                username:
-                    Username.value.trim()
-
-            })
-
-
-        if (profileError) {
-
-            console.log(profileError)
-
-            alert(
-                "Account created, but profile failed."
-            )
-
-            return
-
-        }
-
-
-        await CheckUser()
-
-    }
-)
-
-
-
-/* =========================
-   LOGIN
-========================= */
-
-Login.addEventListener(
-    "click",
-    async function() {
-
-        const {
-            error
-        } =
-        await supabaseClient.auth.signInWithPassword({
-
-            email:
-                LoginEmail.value.trim(),
-
-            password:
-                LoginPassword.value
-
-        })
-
-
-        if (error) {
-
-            alert(error.message)
-
-            return
-
-        }
-
-
-        await CheckUser()
-
-    }
-)
-
-
-
-/* =========================
-   CHECK USER
-========================= */
-
-async function CheckUser() {
-
-    SetLoading(
-        "Checking account...",
-        25
-    )
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.auth.getUser()
-
-
-    if (error) {
-
-        console.log(error.message)
-
-    }
-
-
-    CurrentUser = data.user
-
-
-    if (CurrentUser) {
-
-        Auth.style.display = "none"
-
-        ChatApp.style.display = "block"
-
-
-        SetLoading(
-            "Loading chats...",
-            55
-        )
-
-
-        await LoadUsers()
-
-
-        SetLoading(
-            "Loading stickers...",
-            80
-        )
-
-
-        await LoadStickers()
-
-
-        SetLoading(
-            "Ready!",
-            100
-        )
-
-
-        setTimeout(
-            HideLoading,
-            150
-        )
-
-
+    ]);
+}
+
+function SetDefaultAvatar(element) {
+    element.replaceChildren();
+    element.className = "DefaultAvatar";
+    element.textContent = "👤";
+}
+
+function SetImageAvatar(element, url, className) {
+    const image = document.createElement("img");
+    image.className = className;
+    image.src = url;
+    image.alt = "";
+    element.replaceChildren(image);
+    element.className = className;
+}
+
+function SetChatHeader(user) {
+    ChatTitle.textContent = user.username;
+
+    if (user.avatar_url) {
+        SetImageAvatar(ChatAvatar, user.avatar_url, "Avatar");
     } else {
-
-        Auth.style.display = "flex"
-
-        ChatApp.style.display = "none"
-
-        HideLoading()
-
+        SetDefaultAvatar(ChatAvatar);
     }
-
 }
 
+function SetChatReadyState(ready) {
+    Input.disabled = !ready;
+    Send.disabled = !ready;
+    StickerButton.disabled = !ready;
+}
 
+function ShowChatPlaceholder() {
+    Messages.replaceChildren();
+    ChatTitle.textContent = "";
+    SetDefaultAvatar(ChatAvatar);
+    SetChatReadyState(false);
+}
 
-/* =========================
-   LOAD USERS
-========================= */
+ShowLogin.addEventListener("click", () => {
+    SignupPage.style.display = "none";
+    LoginPage.style.display = "block";
+});
 
-async function LoadUsers() {
+ShowSignup.addEventListener("click", () => {
+    LoginPage.style.display = "none";
+    SignupPage.style.display = "block";
+});
 
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("profiles")
-        .select(
-            "id, username, avatar_url"
-        )
-        .order(
-            "username",
-            {
-                ascending: true
-            }
-        )
-
-
-    if (error) {
-
-        console.log(error.message)
-
-        return
-
+Signup.addEventListener("click", async () => {
+    if (!Username.value.trim() || !Email.value.trim() || !Password.value) {
+        alert("Fill everything in.");
+        return;
     }
 
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: Email.value.trim(),
+        password: Password.value
+    });
 
-    /*
-       IMPORTANT:
+    if (error) {
+        alert(error.message);
+        return;
+    }
 
-       Clear the list BEFORE adding users.
+    if (!data.user) {
+        alert("Account creation failed.");
+        return;
+    }
 
-       This fixes the duplicate chat-list bug.
-    */
+    const { error: profileError } = await supabaseClient
+        .from("profiles")
+        .insert({
+            id: data.user.id,
+            username: Username.value.trim()
+        });
 
-    UserList.replaceChildren()
+    if (profileError) {
+        alert(profileError.message);
+        return;
+    }
 
+    await CheckUser(false);
+});
 
-    const seenUsers =
-        new Set()
+Login.addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signInWithPassword({
+        email: LoginEmail.value.trim(),
+        password: LoginPassword.value
+    });
 
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await CheckUser(false);
+});
+
+async function CheckUser(showLoading = true) {
+    if (showLoading) {
+        LoadingScreen.style.display = "flex";
+        SetLoading("Checking account...", 20);
+    }
+
+    const result = await WithTimeout(
+        supabaseClient.auth.getUser(),
+        5000
+    );
+
+    if (result && result.timedOut) {
+        console.log("Supabase account check timed out.");
+        Auth.style.display = "flex";
+        ChatApp.style.display = "none";
+        HideLoading();
+        return;
+    }
+
+    const { data, error } = result;
+
+    if (error) {
+        console.log(error.message);
+    }
+
+    CurrentUser = data ? data.user : null;
+
+    if (!CurrentUser) {
+        Auth.style.display = "flex";
+        ChatApp.style.display = "none";
+        HideLoading();
+        return;
+    }
+
+    Auth.style.display = "none";
+    ChatApp.style.display = "block";
+
+    SetChatReadyState(false);
+
+    if (showLoading) {
+        SetLoading("Loading chats and stickers...", 50);
+    }
+
+    const startup = Promise.allSettled([
+        LoadUsers(true),
+        LoadStickers()
+    ]);
+
+    const startupResult = await WithTimeout(startup, 5000);
+
+    if (startupResult && startupResult.timedOut) {
+        console.log("Startup data is taking too long. Continuing anyway.");
+    }
+
+    if (showLoading) {
+        SetLoading("Ready!", 100);
+        setTimeout(HideLoading, 100);
+    } else {
+        HideLoading();
+    }
+
+    StartRealtime();
+}
+
+async function LoadUsers(openFirstChat = false) {
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .order("username", { ascending: true });
+
+    if (error) {
+        console.log(error.message);
+        return;
+    }
+
+    UserList.replaceChildren();
+
+    const seenUsers = new Set();
+    let firstUser = null;
 
     for (const user of data) {
-
-        if (
-            user.id === CurrentUser.id
-        ) {
-
-            continue
-
+        if (user.id === CurrentUser.id || seenUsers.has(user.id)) {
+            continue;
         }
 
+        seenUsers.add(user.id);
 
-        if (
-            seenUsers.has(user.id)
-        ) {
-
-            continue
-
+        if (!firstUser) {
+            firstUser = user;
         }
 
+        const person = document.createElement("div");
+        person.className = "UserItem";
+        person.dataset.userId = user.id;
 
-        seenUsers.add(user.id)
+        const avatar = document.createElement("div");
 
+        if (user.avatar_url) {
+            SetImageAvatar(avatar, user.avatar_url, "UserAvatar");
+        } else {
+            SetDefaultAvatar(avatar);
+            avatar.classList.add("UserAvatar");
+        }
 
-        const person =
-            document.createElement("div")
+        const name = document.createElement("span");
+        name.className = "UserName";
+        name.textContent = user.username;
 
-        person.classList.add(
-            "UserItem"
-        )
+        person.appendChild(avatar);
+        person.appendChild(name);
 
+        person.addEventListener("click", () => OpenChat(user));
 
-        const avatar =
-            document.createElement("img")
-
-        avatar.classList.add(
-            "UserAvatar"
-        )
-
-
-        avatar.src =
-            user.avatar_url ||
-            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100%25' height='100%25' fill='%23333'/%3E%3C/svg%3E"
-
-
-        const name =
-            document.createElement("span")
-
-        name.textContent =
-            user.username
-
-
-        person.appendChild(avatar)
-
-        person.appendChild(name)
-
-
-        person.addEventListener(
-            "click",
-            function() {
-
-                OpenChat(user)
-
-            }
-        )
-
-
-        UserList.appendChild(person)
-
+        UserList.appendChild(person);
     }
 
-
-    UsersLoaded = true
-
+    if (openFirstChat && firstUser) {
+        OpenChat(firstUser);
+    }
 }
-
-
-
-/* =========================
-   OPEN CHAT
-========================= */
 
 async function OpenChat(user) {
+    CurrentChatUser = user;
+    ReplyingTo = null;
+    ReplyBar.style.display = "none";
+    StickerPanel.style.display = "none";
 
-    CurrentChatUser = user
+    document.querySelectorAll(".UserItem").forEach(item => {
+        item.classList.toggle("Active", item.dataset.userId === user.id);
+    });
 
-    ChatTitle.textContent =
-        user.username
+    SetChatHeader(user);
+    SetChatReadyState(true);
 
-
-    ChatAvatar.src =
-        user.avatar_url ||
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100%25' height='100%25' fill='%23333'/%3E%3C/svg%3E"
-
-
-    TypingIndicator.textContent = ""
-
-
-    CancelReplyFunction()
-
-
-    await LoadMessages()
-
-    await MarkChatRead()
-
+    await LoadMessages();
+    Input.focus();
 }
 
+function MessageBelongsToCurrentChat(item) {
+    if (!CurrentUser || !CurrentChatUser) {
+        return false;
+    }
 
-
-/* =========================
-   LOAD MESSAGES
-========================= */
+    return (
+        (item.sender_id === CurrentUser.id &&
+            item.receiver_id === CurrentChatUser.id) ||
+        (item.sender_id === CurrentChatUser.id &&
+            item.receiver_id === CurrentUser.id)
+    );
+}
 
 async function LoadMessages() {
-
     if (!CurrentChatUser) {
-
-        return
-
+        return;
     }
 
+    const firstChat =
+        "and(sender_id.eq." + CurrentUser.id +
+        ",receiver_id.eq." + CurrentChatUser.id + ")";
 
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
+    const secondChat =
+        "and(sender_id.eq." + CurrentChatUser.id +
+        ",receiver_id.eq." + CurrentUser.id + ")";
+
+    const { data, error } = await supabaseClient
         .from("messages")
         .select("*")
-        .or(
-            "and(sender_id.eq." +
-            CurrentUser.id +
-            ",receiver_id.eq." +
-            CurrentChatUser.id +
-            ")," +
-            "and(sender_id.eq." +
-            CurrentChatUser.id +
-            ",receiver_id.eq." +
-            CurrentUser.id +
-            ")"
-        )
-        .order(
-            "created_at",
-            {
-                ascending: true
-            }
-        )
-
+        .or(firstChat + "," + secondChat)
+        .order("created_at", { ascending: true });
 
     if (error) {
-
-        console.log(error.message)
-
-        return
-
+        console.log(error.message);
+        return;
     }
 
-
-    Messages.replaceChildren()
-
-
-    if (data.length === 0) {
-
-        const empty =
-            document.createElement("p")
-
-        empty.textContent =
-            "No messages yet."
-
-        empty.id =
-            "EmptyChat"
-
-        Messages.appendChild(empty)
-
-        return
-
-    }
-
+    Messages.replaceChildren();
 
     for (const item of data) {
-
-        CreateMessageElement(item)
-
+        AppendMessage(item);
     }
 
-
-    ScrollToBottom()
-
+    ScrollToBottom();
 }
 
-
-
-/* =========================
-   CREATE MESSAGE
-========================= */
-
-function CreateMessageElement(item) {
-
-    const messageBox =
-        document.createElement("div")
-
-    messageBox.classList.add(
-        "MessageBox"
-    )
-
-
-    if (
-        item.sender_id ===
-        CurrentUser.id
-    ) {
-
-        messageBox.classList.add(
-            "Sent"
-        )
-
-    } else {
-
-        messageBox.classList.add(
-            "Received"
-        )
-
+function AppendMessage(item) {
+    if (!MessageBelongsToCurrentChat(item)) {
+        return;
     }
 
-
-    const senderName =
-        document.createElement("p")
-
-    senderName.classList.add(
-        "SenderName"
-    )
-
-
-    if (
-        item.sender_id ===
-        CurrentUser.id
-    ) {
-
-        senderName.textContent =
-            "You"
-
-    } else {
-
-        senderName.textContent =
-            CurrentChatUser.username
-
+    if (Messages.querySelector('[data-message-id="' + item.id + '"]')) {
+        return;
     }
 
+    const box = document.createElement("div");
+    box.className = "MessageBox";
+    box.dataset.messageId = item.id;
 
-    messageBox.appendChild(
-        senderName
-    )
+    const sender = document.createElement("p");
+    sender.className = "SenderName";
+    sender.textContent =
+        item.sender_id === CurrentUser.id
+            ? "You"
+            : CurrentChatUser.username;
 
-
-    /* =========================
-       REPLY PREVIEW
-    ========================= */
+    box.appendChild(sender);
 
     if (item.reply_to) {
-
-        const reply =
-            document.createElement("div")
-
-        reply.classList.add(
-            "ReplyPreview"
-        )
-
-        reply.textContent =
-            "Reply"
-
-        messageBox.appendChild(
-            reply
-        )
-
+        const reply = document.createElement("div");
+        reply.className = "ReplyPreview";
+        reply.textContent = "Reply";
+        box.appendChild(reply);
     }
 
+    const message = document.createElement("p");
+    message.className = "Message";
 
-    /* =========================
-       MESSAGE CONTENT
-    ========================= */
-
-    const message =
-        document.createElement("div")
-
-    message.classList.add(
-        "Message"
-    )
-
-
-    if (
-        item.content.startsWith(
-            "STICKER:"
-        )
-    ) {
-
-        const image =
-            document.createElement("img")
-
-        image.classList.add(
-            "StickerMessage"
-        )
-
-        image.src =
-            item.content.substring(
-                8
-            )
-
-        message.appendChild(
-            image
-        )
-
+    if (item.content && item.content.startsWith("STICKER:")) {
+        const image = document.createElement("img");
+        image.className = "StickerMessage";
+        image.src = item.content.substring(8);
+        image.alt = "Sticker";
+        message.appendChild(image);
     } else {
-
-        message.textContent =
-            item.content
-
+        message.textContent = item.content || "";
     }
 
-
-    messageBox.appendChild(
-        message
-    )
-
-
-    /* =========================
-       EDITED
-    ========================= */
+    if (item.sender_id === CurrentUser.id) {
+        box.classList.add("Sent");
+    } else {
+        box.classList.add("Received");
+    }
 
     if (item.edited) {
-
-        const edited =
-            document.createElement("span")
-
-        edited.classList.add(
-            "Edited"
-        )
-
-        edited.textContent =
-            "(edited)"
-
-        message.appendChild(
-            edited
-        )
-
+        const edited = document.createElement("span");
+        edited.className = "Edited";
+        edited.textContent = "(edited)";
+        message.appendChild(edited);
     }
 
+    box.appendChild(message);
 
-    /* =========================
-       OWN MESSAGE ACTIONS
-    ========================= */
+    const actions = document.createElement("div");
+    actions.className = "MessageActions";
 
-    if (
-        item.sender_id ===
-        CurrentUser.id
-    ) {
+    const replyButton = document.createElement("button");
+    replyButton.textContent = "↩";
+    replyButton.title = "Reply";
+    replyButton.addEventListener("click", () => StartReply(item));
+    actions.appendChild(replyButton);
 
-        const actions =
-            document.createElement("div")
+    if (item.sender_id === CurrentUser.id) {
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => EditMessage(item));
 
-        actions.classList.add(
-            "MessageActions"
-        )
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => DeleteMessage(item));
 
-
-        const replyButton =
-            document.createElement("button")
-
-        replyButton.textContent =
-            "↩"
-
-        replyButton.addEventListener(
-            "click",
-            function() {
-
-                StartReply(item)
-
-            }
-        )
-
-
-        const editButton =
-            document.createElement("button")
-
-        editButton.textContent =
-            "Edit"
-
-        editButton.addEventListener(
-            "click",
-            function() {
-
-                EditMessage(item)
-
-            }
-        )
-
-
-        const deleteButton =
-            document.createElement("button")
-
-        deleteButton.textContent =
-            "Delete"
-
-        deleteButton.addEventListener(
-            "click",
-            function() {
-
-                DeleteMessage(item)
-
-            }
-        )
-
-
-        actions.appendChild(
-            replyButton
-        )
-
-        actions.appendChild(
-            editButton
-        )
-
-        actions.appendChild(
-            deleteButton
-        )
-
-
-        messageBox.appendChild(
-            actions
-        )
-
-    } else {
-
-        const actions =
-            document.createElement("div")
-
-        actions.classList.add(
-            "MessageActions"
-        )
-
-
-        const replyButton =
-            document.createElement("button")
-
-        replyButton.textContent =
-            "↩"
-
-        replyButton.addEventListener(
-            "click",
-            function() {
-
-                StartReply(item)
-
-            }
-        )
-
-
-        actions.appendChild(
-            replyButton
-        )
-
-
-        messageBox.appendChild(
-            actions
-        )
-
+        actions.appendChild(editButton);
+        actions.appendChild(deleteButton);
     }
 
-
-    Messages.appendChild(
-        messageBox
-    )
-
+    box.appendChild(actions);
+    Messages.appendChild(box);
 }
-
-
-
-/* =========================
-   SEND MESSAGE
-========================= */
-
-Send.addEventListener(
-    "click",
-    SendMessage
-)
-
 
 async function SendMessage() {
+    if (!CurrentChatUser) return;
 
-    if (!CurrentChatUser) {
+    const text = Input.value.trim();
 
-        alert("Select a chat first.")
+    if (!text) return;
 
-        return
-
-    }
-
-
-    const text =
-        Input.value.trim()
-
-
-    if (text === "") {
-
-        return
-
-    }
-
-
-    const {
-        error
-    } =
-    await supabaseClient
+    const { error } = await supabaseClient
         .from("messages")
         .insert({
-
-            sender_id:
-                CurrentUser.id,
-
-            receiver_id:
-                CurrentChatUser.id,
-
-            content:
-                text,
-
-            reply_to:
-                ReplyingTo
-                    ? ReplyingTo.id
-                    : null
-
-        })
-
+            sender_id: CurrentUser.id,
+            receiver_id: CurrentChatUser.id,
+            content: text,
+            reply_to: ReplyingTo ? ReplyingTo.id : null
+        });
 
     if (error) {
-
-        console.log(error.message)
-
-        alert(error.message)
-
-        return
-
+        alert(error.message);
+        return;
     }
 
-
-    Input.value = ""
-
-    CancelReplyFunction()
-
-
-    /*
-       We load immediately for the sender.
-
-       Realtime will handle the other person's screen.
-    */
-
-    await LoadMessages()
-
+    Input.value = "";
+    CancelReplyFunction();
+    await LoadMessages();
 }
 
+Send.addEventListener("click", SendMessage);
 
-
-/* =========================
-   ENTER TO SEND
-========================= */
-
-Input.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            Send.click()
-
-        }
-
+Input.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        SendMessage();
     }
-)
-
-
-
-/* =========================
-   REPLY
-========================= */
+});
 
 function StartReply(item) {
+    ReplyingTo = item;
+    ReplyBar.style.display = "flex";
 
-    ReplyingTo = item
-
-    ReplyBar.style.display =
-        "flex"
-
-
-    if (
-        item.sender_id ===
-        CurrentUser.id
-    ) {
-
-        ReplyName.textContent =
-            "You"
-
-    } else {
-
-        ReplyName.textContent =
-            CurrentChatUser.username
-
-    }
-
+    ReplyName.textContent =
+        item.sender_id === CurrentUser.id
+            ? "You"
+            : CurrentChatUser.username;
 
     ReplyText.textContent =
-        item.content.startsWith(
-            "STICKER:"
-        )
+        item.content && item.content.startsWith("STICKER:")
             ? "Sticker"
-            : item.content
+            : item.content;
 
-
-    Input.focus()
-
+    Input.focus();
 }
-
 
 function CancelReplyFunction() {
-
-    ReplyingTo = null
-
-    ReplyBar.style.display =
-        "none"
-
-    ReplyText.textContent = ""
-
+    ReplyingTo = null;
+    ReplyBar.style.display = "none";
+    ReplyText.textContent = "";
 }
 
-
-CancelReply.addEventListener(
-    "click",
-    CancelReplyFunction
-)
-
-
-
-/* =========================
-   EDIT
-========================= */
+CancelReply.addEventListener("click", CancelReplyFunction);
 
 async function EditMessage(item) {
-
-    if (
-        !item.content ||
-        item.content.startsWith(
-            "STICKER:"
-        )
-    ) {
-
-        return
-
+    if (!item.content || item.content.startsWith("STICKER:")) {
+        return;
     }
 
+    const newText = prompt("Edit message:", item.content);
 
-    const newText =
-        prompt(
-            "Edit message:",
-            item.content
-        )
-
-
-    if (
-        newText === null ||
-        newText.trim() === ""
-    ) {
-
-        return
-
+    if (newText === null || !newText.trim()) {
+        return;
     }
 
-
-    const {
-        error
-    } =
-    await supabaseClient
+    const { error } = await supabaseClient
         .from("messages")
         .update({
-
-            content:
-                newText.trim(),
-
+            content: newText.trim(),
             edited: true
-
         })
-        .eq(
-            "id",
-            item.id
-        )
-        .eq(
-            "sender_id",
-            CurrentUser.id
-        )
-
+        .eq("id", item.id)
+        .eq("sender_id", CurrentUser.id);
 
     if (error) {
-
-        console.log(error.message)
-
-        return
-
+        alert(error.message);
+        return;
     }
 
-
-    await LoadMessages()
-
+    await LoadMessages();
 }
-
-
-
-/* =========================
-   DELETE
-========================= */
 
 async function DeleteMessage(item) {
-
-    const yes =
-        confirm(
-            "Delete this message?"
-        )
-
-
-    if (!yes) {
-
-        return
-
+    if (!confirm("Delete this message?")) {
+        return;
     }
 
-
-    const {
-        error
-    } =
-    await supabaseClient
+    const { error } = await supabaseClient
         .from("messages")
         .delete()
-        .eq(
-            "id",
-            item.id
-        )
-        .eq(
-            "sender_id",
-            CurrentUser.id
-        )
-
+        .eq("id", item.id)
+        .eq("sender_id", CurrentUser.id);
 
     if (error) {
-
-        console.log(error.message)
-
-        return
-
+        alert(error.message);
+        return;
     }
 
-
-    await LoadMessages()
-
+    await LoadMessages();
 }
-
-
-
-/* =========================
-   AUTO SCROLL
-========================= */
 
 function ScrollToBottom() {
-
-    Messages.scrollTop =
-        Messages.scrollHeight
-
+    Messages.scrollTop = Messages.scrollHeight;
 }
 
+SettingsButton.addEventListener("click", () => {
+    SettingsPanel.style.display =
+        SettingsPanel.style.display === "block"
+            ? "none"
+            : "block";
+});
 
+CloseSettings.addEventListener("click", () => {
+    SettingsPanel.style.display = "none";
+});
 
-/* =========================
-   SETTINGS
-========================= */
+Logout.addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signOut();
 
-SettingsButton.addEventListener(
-    "click",
-    function() {
-
-        SettingsPanel.style.display =
-            "block"
-
+    if (error) {
+        alert(error.message);
+        return;
     }
-)
 
+    CurrentUser = null;
+    CurrentChatUser = null;
+    UserList.replaceChildren();
+    Messages.replaceChildren();
+    SettingsPanel.style.display = "none";
+    ChatApp.style.display = "none";
+    Auth.style.display = "flex";
+    SignupPage.style.display = "block";
+    LoginPage.style.display = "none";
+});
 
-CloseSettings.addEventListener(
-    "click",
-    function() {
-
-        SettingsPanel.style.display =
-            "none"
-
-    }
-)
-
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-Logout.addEventListener(
-    "click",
-    async function() {
-
-        const {
-            error
-        } =
-        await supabaseClient.auth.signOut()
-
-
-        if (error) {
-
-            console.log(error.message)
-
-            return
-
-        }
-
-
-        CurrentUser = null
-
-        CurrentChatUser = null
-
-        SettingsPanel.style.display =
-            "none"
-
-
-        ChatApp.style.display =
-            "none"
-
-        Auth.style.display =
-            "flex"
-
-
-        LoginPage.style.display =
-            "none"
-
-        SignupPage.style.display =
-            "block"
-
-    }
-)
-
-
-
-/* =========================
-   PROFILE PICTURE UPLOAD
-========================= */
-
-UploadAvatar.addEventListener(
-    "click",
-    UploadProfilePicture
-)
-
+UploadAvatar.addEventListener("click", UploadProfilePicture);
 
 async function UploadProfilePicture() {
+    const file = AvatarFile.files[0];
 
-    const file =
-        AvatarFile.files[0]
-
-
-    if (!file) {
-
-        alert(
-            "Choose an image first."
-        )
-
-        return
-
+    if (!file || !CurrentUser) {
+        alert("Choose an image first.");
+        return;
     }
-
 
     const extension =
-        file.name
-            .split(".")
-            .pop()
-
+        file.name.split(".").pop().toLowerCase();
 
     const path =
-        CurrentUser.id +
-        "." +
-        extension
+        CurrentUser.id + "/" +
+        crypto.randomUUID() + "." +
+        extension;
 
-
-    const {
-        error: uploadError
-    } =
-    await supabaseClient.storage
+    const { error: uploadError } = await supabaseClient.storage
         .from("avatars")
-        .upload(
-            path,
-            file,
-            {
-                upsert: true
-            }
-        )
-
+        .upload(path, file, { upsert: false });
 
     if (uploadError) {
-
-        console.log(
-            uploadError.message
-        )
-
-        alert(
-            uploadError.message
-        )
-
-        return
-
+        alert(uploadError.message);
+        return;
     }
 
-
-    const {
-        data
-    } =
-    supabaseClient.storage
+    const { data } = supabaseClient.storage
         .from("avatars")
-        .getPublicUrl(path)
+        .getPublicUrl(path);
 
-
-    const avatarURL =
-        data.publicUrl
-
-
-    const {
-        error: updateError
-    } =
-    await supabaseClient
+    const { error: updateError } = await supabaseClient
         .from("profiles")
-        .update({
-
-            avatar_url:
-                avatarURL
-
-        })
-        .eq(
-            "id",
-            CurrentUser.id
-        )
-
+        .update({ avatar_url: data.publicUrl })
+        .eq("id", CurrentUser.id);
 
     if (updateError) {
-
-        console.log(
-            updateError.message
-        )
-
-        return
-
+        alert(updateError.message);
+        return;
     }
 
+    AvatarFile.value = "";
+    await LoadUsers(false);
 
-    alert(
-        "Profile picture updated!"
-    )
-
-
-    await LoadUsers()
-
-
-    if (CurrentChatUser) {
-
-        const {
-            data: profile
-        } =
-        await supabaseClient
-            .from("profiles")
-            .select(
-                "id, username, avatar_url"
-            )
-            .eq(
-                "id",
-                CurrentChatUser.id
-            )
-            .single()
-
-
-        if (profile) {
-
-            CurrentChatUser =
-                profile
-
-            ChatAvatar.src =
-                profile.avatar_url || ""
-
-        }
-
-    }
-
+    alert("Profile picture updated!");
 }
 
+document.querySelectorAll("#ThemeButtons button").forEach(button => {
+    button.addEventListener("click", () => {
+        const theme = button.dataset.theme;
+        document.body.className = "theme-" + theme;
+        localStorage.setItem("theme", theme);
+    });
+});
 
-
-/* =========================
-   THEMES
-========================= */
-
-const ThemeButtons =
-    document.querySelectorAll(
-        "#ThemeButtons button"
-    )
-
-
-ThemeButtons.forEach(
-    function(button) {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                const theme =
-                    button.dataset.theme
-
-
-                document.body.className =
-                    "theme-" + theme
-
-
-                localStorage.setItem(
-                    "theme",
-                    theme
-                )
-
-            }
-        )
-
-    }
-)
-
-
-const SavedTheme =
-    localStorage.getItem(
-        "theme"
-    )
-
+const SavedTheme = localStorage.getItem("theme");
 
 if (SavedTheme) {
-
-    document.body.className =
-        "theme-" + SavedTheme
-
+    document.body.className = "theme-" + SavedTheme;
 }
 
-
-
-/* =========================
-   STICKER UPLOAD
-========================= */
-
-UploadSticker.addEventListener(
-    "click",
-    UploadNewSticker
-)
-
+UploadSticker.addEventListener("click", UploadNewSticker);
 
 async function UploadNewSticker() {
+    const file = StickerFile.files[0];
 
-    const file =
-        StickerFile.files[0]
-
-
-    if (!file) {
-
-        alert(
-            "Choose a sticker image first."
-        )
-
-        return
-
+    if (!file || !CurrentUser) {
+        alert("Choose a sticker image first.");
+        return;
     }
-
 
     const extension =
-        file.name
-            .split(".")
-            .pop()
-
+        file.name.split(".").pop().toLowerCase();
 
     const path =
-        CurrentUser.id +
-        "/" +
-        crypto.randomUUID() +
-        "." +
-        extension
+        CurrentUser.id + "/" +
+        crypto.randomUUID() + "." +
+        extension;
 
-
-    const {
-        error: uploadError
-    } =
-    await supabaseClient.storage
+    const { error: uploadError } = await supabaseClient.storage
         .from("stickers")
-        .upload(
-            path,
-            file
-        )
-
+        .upload(path, file);
 
     if (uploadError) {
-
-        console.log(
-            uploadError.message
-        )
-
-        alert(
-            uploadError.message
-        )
-
-        return
-
+        alert(uploadError.message);
+        return;
     }
 
-
-    const {
-        data
-    } =
-    supabaseClient.storage
+    const { data } = supabaseClient.storage
         .from("stickers")
-        .getPublicUrl(path)
+        .getPublicUrl(path);
 
-
-    const stickerURL =
-        data.publicUrl
-
-
-    const {
-        error
-    } =
-    await supabaseClient
+    const { error } = await supabaseClient
         .from("stickers")
         .insert({
-
-            user_id:
-                CurrentUser.id,
-
-            url:
-                stickerURL
-
-        })
-
+            user_id: CurrentUser.id,
+            url: data.publicUrl
+        });
 
     if (error) {
-
-        console.log(
-            error.message
-        )
-
-        return
-
+        alert(error.message);
+        return;
     }
 
-
-    StickerFile.value = ""
-
-
-    await LoadStickers()
-
-
-    alert(
-        "Sticker uploaded!"
-    )
-
+    StickerFile.value = "";
+    await LoadStickers();
+    alert("Sticker uploaded!");
 }
-
-
-
-/* =========================
-   LOAD STICKERS
-========================= */
 
 async function LoadStickers() {
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
+    const { data, error } = await supabaseClient
         .from("stickers")
-        .select(
-            "id, user_id, url"
-        )
-        .order(
-            "id",
-            {
-                ascending: false
-            }
-        )
-
+        .select("id, user_id, url")
+        .order("id", { ascending: false });
 
     if (error) {
-
-        console.log(error.message)
-
-        return
-
+        console.log(error.message);
+        return;
     }
 
-
-    StickerPanel.replaceChildren()
-
+    StickerPanel.replaceChildren();
 
     for (const sticker of data) {
+        const image = document.createElement("img");
+        image.className = "StickerChoice";
+        image.src = sticker.url;
+        image.alt = "Sticker";
 
-        const image =
-            document.createElement("img")
+        image.addEventListener("click", () => {
+            SendSticker(sticker.url);
+        });
 
-        image.classList.add(
-            "StickerChoice"
-        )
-
-        image.src =
-            sticker.url
-
-
-        image.addEventListener(
-            "click",
-            function() {
-
-                SendSticker(
-                    sticker.url
-                )
-
-            }
-        )
-
-
-        StickerPanel.appendChild(
-            image
-        )
-
+        StickerPanel.appendChild(image);
     }
-
-
-    StickersLoaded = true
-
 }
 
-
-
-/* =========================
-   STICKER PANEL
-========================= */
-
-StickerButton.addEventListener(
-    "click",
-    function() {
-
-        if (
-            StickerPanel.style.display ===
-            "block"
-        ) {
-
-            StickerPanel.style.display =
-                "none"
-
-        } else {
-
-            StickerPanel.style.display =
-                "block"
-
-        }
-
-    }
-)
-
-
-
-/* =========================
-   SEND STICKER
-========================= */
-
-async function SendSticker(url) {
-
-    if (!CurrentChatUser) {
-
-        alert(
-            "Select a chat first."
-        )
-
-        return
-
-    }
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("messages")
-        .insert({
-
-            sender_id:
-                CurrentUser.id,
-
-            receiver_id:
-                CurrentChatUser.id,
-
-            content:
-                "STICKER:" + url,
-
-            reply_to:
-                ReplyingTo
-                    ? ReplyingTo.id
-                    : null
-
-        })
-
-
-    if (error) {
-
-        console.log(
-            error.message
-        )
-
-        return
-
-    }
-
+StickerButton.addEventListener("click", () => {
+    if (!CurrentChatUser) return;
 
     StickerPanel.style.display =
-        "none"
+        StickerPanel.style.display === "block"
+            ? "none"
+            : "block";
+});
 
+async function SendSticker(url) {
+    if (!CurrentChatUser) return;
 
-    CancelReplyFunction()
-
-
-    await LoadMessages()
-
-}
-
-
-
-/* =========================
-   MARK CHAT READ
-========================= */
-
-async function MarkChatRead() {
-
-    if (!CurrentChatUser) {
-
-        return
-
-    }
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("message_reads")
-        .upsert({
-
-            user_id:
-                CurrentUser.id,
-
-            other_user_id:
-                CurrentChatUser.id,
-
-            last_read_at:
-                new Date().toISOString()
-
-        })
-
+    const { error } = await supabaseClient
+        .from("messages")
+        .insert({
+            sender_id: CurrentUser.id,
+            receiver_id: CurrentChatUser.id,
+            content: "STICKER:" + url,
+            reply_to: ReplyingTo ? ReplyingTo.id : null
+        });
 
     if (error) {
-
-        console.log(
-            error.message
-        )
-
+        alert(error.message);
+        return;
     }
 
+    StickerPanel.style.display = "none";
+    CancelReplyFunction();
+    await LoadMessages();
 }
 
+function StartRealtime() {
+    if (RealtimeStarted) return;
+    RealtimeStarted = true;
 
+    supabaseClient
+        .channel("messages-live")
+        .on(
+            "postgres_changes",
+            {
+                event: "INSERT",
+                schema: "public",
+                table: "messages"
+            },
+            payload => {
+                if (!MessageBelongsToCurrentChat(payload.new)) {
+                    return;
+                }
 
-/* =========================
-   REALTIME
-========================= */
-
-/*
-   IMPORTANT:
-
-   There is NO one-second reload loop.
-
-   Supabase Realtime tells us when a
-   message is inserted/updated/deleted.
-*/
-
-supabaseClient
-    .channel("messages-live")
-    .on(
-        "postgres_changes",
-        {
-            event: "*",
-            schema: "public",
-            table: "messages"
-        },
-        async function(payload) {
-
-            if (!CurrentChatUser) {
-
-                return
-
+                AppendMessage(payload.new);
+                ScrollToBottom();
             }
-
-
-            const message =
-                payload.new ||
-                payload.old
-
-
-            if (!message) {
-
-                return
-
+        )
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "messages"
+            },
+            async payload => {
+                if (MessageBelongsToCurrentChat(payload.new)) {
+                    await LoadMessages();
+                }
             }
-
-
-            const isOurChat =
-                (
-                    message.sender_id ===
-                    CurrentUser.id &&
-                    message.receiver_id ===
-                    CurrentChatUser.id
-                )
-                ||
-                (
-                    message.sender_id ===
-                    CurrentChatUser.id &&
-                    message.receiver_id ===
-                    CurrentUser.id
-                )
-
-
-            if (!isOurChat) {
-
-                return
-
+        )
+        .on(
+            "postgres_changes",
+            {
+                event: "DELETE",
+                schema: "public",
+                table: "messages"
+            },
+            async payload => {
+                if (MessageBelongsToCurrentChat(payload.old)) {
+                    await LoadMessages();
+                }
             }
+        )
+        .subscribe(status => {
+            if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+                console.log("Realtime unavailable. The app will still work normally.");
+            }
+        });
+}
 
-
-            await LoadMessages()
-
-        }
-    )
-    .subscribe()
-
-
-
-/* =========================
-   START APP
-========================= */
-
-CheckUser()
+ShowChatPlaceholder();
+CheckUser(true);
