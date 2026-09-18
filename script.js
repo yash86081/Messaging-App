@@ -1294,6 +1294,8 @@ SendSticker=async function(url){
 
 NewGroup?.addEventListener("click",async()=>{
     if(!CurrentUser)return;
+    const {data:groupSetting}=await supabaseClient.from("site_settings").select("value").eq("key","groups_enabled").maybeSingle();
+    if(groupSetting?.value?.enabled===false){alert("Groups are currently disabled.");return;}
     const name=prompt("Group name:");if(!name?.trim())return;
     const names=(prompt("Member usernames, separated by commas:")||"").split(",").map(x=>x.trim()).filter(Boolean);
     const {data:group,error}=await supabaseClient.from("groups")
@@ -1567,7 +1569,10 @@ async function GlobalSearchV4(q){
         const row=document.createElement("div");row.className="SearchResult";
         const textContent=String(m.content||"").replace(/^FILE:.*$/,"[file]").slice(0,160);
         const date=new Date(m.created_at).toLocaleString();
-        row.innerHTML="<strong>"+(m.group_id?"Group message":"Message")+"</strong><br>"+textContent+"<br><small>"+date+"</small>";
+        const heading=document.createElement("strong");heading.textContent=m.group_id?"Group message":"Message";
+        const body=document.createElement("span");body.textContent=textContent;
+        const small=document.createElement("small");small.textContent=date;
+        row.append(heading,document.createElement("br"),body,document.createElement("br"),small);
         row.onclick=async()=>{
             if(m.group_id){
                 const {data:g}=await supabaseClient.from("groups").select("id,name,avatar_url,owner_id,created_at").eq("id",m.group_id).maybeSingle();
