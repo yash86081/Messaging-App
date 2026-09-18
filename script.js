@@ -164,6 +164,13 @@ Signup.addEventListener("click", async () => {
         return;
     }
 
+    const { data: siteSetting } = await supabaseClient.from("site_settings")
+        .select("value").eq("key","registration_enabled").maybeSingle();
+    if (siteSetting?.value?.enabled === false) {
+        alert("Registration is currently disabled.");
+        return;
+    }
+
     const { data, error } = await supabaseClient.auth.signUp({
         email: Email.value.trim(),
         password: Password.value
