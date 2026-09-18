@@ -182,61 +182,74 @@ Login.addEventListener("click", async () => {
 });
 
 async function CheckUser(showLoading = true) {
-    if (showLoading) {
-        LoadingScreen.style.display = "flex";
-        SetLoading("Checking account...", 20);
-    }
+    try {
+        if (showLoading) {
+            LoadingScreen.style.display = "flex";
+            SetLoading("Checking account...", 20);
+        }
 
-    const result = await WithTimeout(supabaseClient.auth.getUser(), 5000);
+        const result = await WithTimeout(supabaseClient.auth.getUser(), 5000);
 
-    if (result && result.timedOut) {
-        Auth.style.display = "flex";
-        ChatApp.style.display = "none";
+        if (result && result.timedOut) {
+            Auth.style.display = "flex";
+            ChatApp.style.display = "none";
+            return;
+        }
+
+        CurrentUser = result.data ? result.data.user : null;
+
+        if (!CurrentUser) {
+            Auth.style.display = "flex";
+            ChatApp.style.display = "none";
+            return;
+        }
+
+        Auth.style.display = "none";
+        ChatApp.style.display = "block";
+        SetChatReadyState(false);
+
+        if (showLoading) SetLoading("Loading chats and profile...", 50);
+
+        const profileResult = await WithTimeout(
+            supabaseClient
+                .from("profiles")
+                .select("id, username, avatar_url")
+                .eq("id", CurrentUser.id)
+                .maybeSingle(),
+            5000
+        );
+
+        if (profileResult && profileResult.timedOut) {
+            CurrentProfile = null;
+        } else {
+            CurrentProfile = profileResult.data || null;
+        }
+
+        const startup = Promise.allSettled([
+            LoadUsers(),
+            LoadStickers()
+        ]);
+
+        await WithTimeout(startup, 5000);
+
+        SetSettingsProfile();
+
+        if (showLoading) {
+            SetLoading("Ready!", 100);
+            setTimeout(HideLoading, 100);
+        }
+    } catch (error) {
+        console.error("Startup error:", error);
+        Auth.style.display = CurrentUser ? "none" : "flex";
+        ChatApp.style.display = CurrentUser ? "block" : "none";
+    } finally {
         HideLoading();
-        return;
+
+        if (CurrentUser) {
+            StartRealtime();
+            StartPresence();
+        }
     }
-
-    CurrentUser = result.data ? result.data.user : null;
-
-    if (!CurrentUser) {
-        Auth.style.display = "flex";
-        ChatApp.style.display = "none";
-        HideLoading();
-        return;
-    }
-
-    Auth.style.display = "none";
-    ChatApp.style.display = "block";
-    SetChatReadyState(false);
-
-    if (showLoading) SetLoading("Loading chats and profile...", 50);
-
-    const profileResult = await supabaseClient
-        .from("profiles")
-        .select("id, username, avatar_url")
-        .eq("id", CurrentUser.id)
-        .maybeSingle();
-
-    CurrentProfile = profileResult.data;
-
-    const startup = Promise.allSettled([
-        LoadUsers(),
-        LoadStickers()
-    ]);
-
-    await WithTimeout(startup, 5000);
-
-    SetSettingsProfile();
-
-    if (showLoading) {
-        SetLoading("Ready!", 100);
-        setTimeout(HideLoading, 100);
-    } else {
-        HideLoading();
-    }
-
-    StartRealtime();
-    StartPresence();
 }
 
 async function LoadUsers() {
