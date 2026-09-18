@@ -1,303 +1,111 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Messaging Project</title>
-
     <link rel="stylesheet" href="style.css">
-
 </head>
+<body class="theme-black">
 
-<body>
+<div id="LoadingScreen">
+    <div id="LoadingBox">
+        <h1>Messaging</h1>
+        <p id="LoadingText">Loading...</p>
+        <div id="LoadingBar"><div id="LoadingProgress"></div></div>
+    </div>
+</div>
 
-    <!-- LOADING -->
+<div id="Auth">
+    <h1>Messaging Project</h1>
 
-    <div id="LoadingScreen">
-
-        <div id="LoadingBox">
-
-            <h1>Messaging</h1>
-
-            <p id="LoadingText">Loading...</p>
-
-            <div id="LoadingBar">
-                <div id="LoadingProgress"></div>
-            </div>
-
-        </div>
-
+    <div id="SignupPage">
+        <h2>Sign Up</h2>
+        <input id="Username" placeholder="Username">
+        <input id="Email" placeholder="Email">
+        <input id="Password" type="password" placeholder="Password">
+        <button id="Signup">Sign Up</button>
+        <p>Already have an account?</p>
+        <button id="ShowLogin">Log In</button>
     </div>
 
+    <div id="LoginPage">
+        <h2>Log In</h2>
+        <input id="LoginEmail" placeholder="Email">
+        <input id="LoginPassword" type="password" placeholder="Password">
+        <button id="Login">Log In</button>
+        <p>Don't have an account?</p>
+        <button id="ShowSignup">Sign Up</button>
+    </div>
+</div>
 
-    <!-- AUTH -->
-
-    <div id="Auth">
-
-        <h1>Messaging Project</h1>
-
-
-        <!-- SIGN UP -->
-
-        <div id="SignupPage">
-
-            <h2>Sign Up</h2>
-
-            <input id="Username" placeholder="Username">
-
-            <input id="Email" placeholder="Email">
-
-            <input
-                id="Password"
-                type="password"
-                placeholder="Password"
-            >
-
-            <button id="Signup">Sign Up</button>
-
-            <p>Already have an account?</p>
-
-            <button id="ShowLogin">Log In</button>
-
-        </div>
-
-
-        <!-- LOGIN -->
-
-        <div id="LoginPage">
-
-            <h2>Log In</h2>
-
-            <input id="LoginEmail" placeholder="Email">
-
-            <input
-                id="LoginPassword"
-                type="password"
-                placeholder="Password"
-            >
-
-            <button id="Login">Log In</button>
-
-            <p>Don't have an account?</p>
-
-            <button id="ShowSignup">Sign Up</button>
-
-        </div>
-
+<div id="ChatApp">
+    <div id="TopBar">
+        <h1>Messaging</h1>
+        <button id="SettingsButton">⚙️</button>
     </div>
 
+    <div id="SettingsPanel">
+        <h2>Settings</h2>
 
-    <!-- CHAT APP -->
+        <h3>Profile Picture</h3>
+        <input id="AvatarFile" type="file" accept="image/*">
+        <button id="UploadAvatar">Upload Picture</button>
 
-    <div id="ChatApp">
-
-
-        <!-- TOP BAR -->
-
-        <div id="TopBar">
-
-            <h1>Messaging</h1>
-
-            <button id="SettingsButton">⚙️</button>
-
+        <h3>Theme</h3>
+        <div id="ThemeButtons">
+            <button data-theme="black">⚫ Black</button>
+            <button data-theme="blue">🔵 Blue</button>
+            <button data-theme="yellow">🟡 Yellow</button>
+            <button data-theme="red">🔴 Red</button>
+            <button data-theme="green">🟢 Green</button>
+            <button data-theme="pink">🩷 Pink</button>
         </div>
 
-
-        <!-- SETTINGS -->
-
-        <div id="SettingsPanel">
-
-            <h2>Settings</h2>
-
-
-            <h3>Profile Picture</h3>
-
-            <input
-                id="AvatarFile"
-                type="file"
-                accept="image/*"
-            >
-
-            <button id="UploadAvatar">
-                Upload Picture
-            </button>
-
-
-            <h3>Theme</h3>
-
-            <div id="ThemeButtons">
-
-                <button data-theme="black">
-                    ⚫ Black
-                </button>
-
-                <button data-theme="blue">
-                    🔵 Blue
-                </button>
-
-                <button data-theme="yellow">
-                    🟡 Yellow
-                </button>
-
-                <button data-theme="red">
-                    🔴 Red
-                </button>
-
-                <button data-theme="green">
-                    🟢 Green
-                </button>
-
-                <button data-theme="pink">
-                    🩷 Pink
-                </button>
-
-            </div>
-
-
-            <h3>Stickers</h3>
-
-            <input
-                id="StickerFile"
-                type="file"
-                accept="image/*"
-            >
-
-            <button id="UploadSticker">
-                Upload Sticker
-            </button>
-
-
-            <button id="Logout">
-                Log Out
-            </button>
-
-            <button id="CloseSettings">
-                Close
-            </button>
-
-        </div>
-
-
-        <!-- MAIN CHAT AREA -->
-
-        <div id="Container">
-
-
-            <!-- USER LIST -->
-
-            <div id="Chats">
-
-                <h2>Chats</h2>
-
-                <div id="UserList"></div>
-
-            </div>
-
-
-            <!-- CHAT -->
-
-            <div id="Chat">
-
-
-                <!-- CHAT HEADER -->
-
-                <div id="ChatHeader">
-
-                    <img
-                        id="ChatAvatar"
-                        class="Avatar"
-                        src=""
-                        alt=""
-                    >
-
-                    <div>
-
-                        <h2 id="ChatTitle">
-                            Select a chat
-                        </h2>
-
-                        <p id="TypingIndicator"></p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- MESSAGES -->
-
-                <div id="Messages">
-
-                    <p id="EmptyChat">
-                        Select someone to start chatting.
-                    </p>
-
-                </div>
-
-
-                <!-- REPLY -->
-
-                <div id="ReplyBar">
-
-                    <div>
-
-                        <strong id="ReplyName">
-                            Replying
-                        </strong>
-
-                        <p id="ReplyText"></p>
-
-                    </div>
-
-                    <button id="CancelReply">
-                        ✕
-                    </button>
-
-                </div>
-
-
-                <!-- STICKERS -->
-
-                <div id="StickerPanel"></div>
-
-
-                <!-- MESSAGE BAR -->
-
-                <div id="MessageBar">
-
-                    <button id="StickerButton">
-                        😀
-                    </button>
-
-                    <input
-                        id="Input"
-                        placeholder="Type a message..."
-                        autocomplete="off"
-                    >
-
-                    <button id="Send">
-                        Send
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
+        <h3>Stickers</h3>
+        <input id="StickerFile" type="file" accept="image/*">
+        <button id="UploadSticker">Upload Sticker</button>
+
+        <button id="Logout">Log Out</button>
+        <button id="CloseSettings">Close</button>
     </div>
 
+    <div id="Container">
+        <div id="Chats">
+            <h2>Chats</h2>
+            <div id="UserList"></div>
+        </div>
 
-    <!-- SUPABASE -->
+        <div id="Chat">
+            <div id="ChatHeader">
+                <div id="ChatAvatar"></div>
+                <div>
+                    <h2 id="ChatTitle"></h2>
+                </div>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+            <div id="Messages"></div>
 
-    <script src="script.js"></script>
+            <div id="ReplyBar">
+                <div>
+                    <strong id="ReplyName"></strong>
+                    <p id="ReplyText"></p>
+                </div>
+                <button id="CancelReply">✕</button>
+            </div>
 
+            <div id="StickerPanel"></div>
+
+            <div id="MessageBar">
+                <button id="StickerButton">😀</button>
+                <input id="Input" placeholder="Type a message..." autocomplete="off">
+                <button id="Send">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
-
 </html>
