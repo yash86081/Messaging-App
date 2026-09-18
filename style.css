@@ -1,885 +1,399 @@
 :root {
-
-    --main: #333;
-    --main-dark: #222;
+    --accent: #333;
+    --accent-dark: #222;
     --background: #111;
     --panel: #181818;
+    --panel-2: #202020;
     --text: white;
     --muted: #aaa;
-
 }
 
-
-* {
-    box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 
 body {
-
     margin: 0;
-
     font-family: Arial, sans-serif;
-
     background: var(--background);
-
     color: var(--text);
-
 }
-
-
-/* =========================
-   LOADING
-========================= */
-
-#LoadingScreen {
-
-    position: fixed;
-
-    inset: 0;
-
-    background: #111;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    z-index: 9999;
-
-}
-
-
-#LoadingBox {
-
-    width: 300px;
-
-    text-align: center;
-
-}
-
-
-#LoadingBox h1 {
-
-    margin-bottom: 10px;
-
-}
-
-
-#LoadingText {
-
-    color: #aaa;
-
-}
-
-
-#LoadingBar {
-
-    width: 100%;
-
-    height: 5px;
-
-    background: #333;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-}
-
-
-#LoadingProgress {
-
-    width: 0%;
-
-    height: 100%;
-
-    background: var(--main);
-
-    transition: width 0.2s;
-
-}
-
-
-/* =========================
-   AUTH
-========================= */
-
-#Auth {
-
-    min-height: 100vh;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-}
-
-
-#Auth h1 {
-
-    margin-bottom: 30px;
-
-}
-
-
-#SignupPage,
-#LoginPage {
-
-    width: 320px;
-
-    padding: 25px;
-
-    background: var(--panel);
-
-    border-radius: 15px;
-
-    text-align: center;
-
-}
-
-
-#LoginPage {
-
-    display: none;
-
-}
-
-
-#Auth input {
-
-    width: 100%;
-
-    height: 40px;
-
-    margin: 7px 0;
-
-    padding: 10px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #292929;
-
-    color: white;
-
-}
-
 
 button {
-
     border: none;
-
     border-radius: 8px;
-
     padding: 9px 13px;
-
-    background: var(--main);
-
+    background: var(--accent);
     color: white;
-
     cursor: pointer;
-
 }
 
+button:hover { filter: brightness(1.2); }
+button:disabled { opacity: .45; cursor: not-allowed; }
 
-button:hover {
-
-    filter: brightness(1.25);
-
+#LoadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111;
 }
 
-
-#Auth button {
-
-    margin-top: 5px;
-
+#LoadingBox {
+    width: 300px;
+    text-align: center;
 }
 
+#LoadingText { color: var(--muted); }
 
-/* =========================
-   CHAT APP
-========================= */
+#LoadingBar {
+    width: 100%;
+    height: 5px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#LoadingProgress {
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width .2s;
+}
+
+#Auth {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#SignupPage, #LoginPage {
+    width: 320px;
+    padding: 25px;
+    background: var(--panel);
+    border-radius: 15px;
+    text-align: center;
+}
+
+#LoginPage { display: none; }
+
+#Auth input {
+    width: 100%;
+    height: 40px;
+    margin: 7px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #292929;
+    color: white;
+}
 
 #ChatApp {
-
     display: none;
-
     height: 100vh;
-
 }
-
 
 #TopBar {
-
     height: 65px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     padding: 0 20px;
-
     background: var(--panel);
-
     border-bottom: 1px solid #333;
-
 }
 
+#TopBar h1 { margin: 0; }
 
-#TopBar h1 {
-
-    margin: 0;
-
-}
-
-
-#SettingsButton {
-
-    font-size: 20px;
-
-}
-
-
-/* =========================
-   CHAT CONTAINER
-========================= */
+#SettingsButton { font-size: 20px; }
 
 #Container {
-
     display: flex;
-
     height: calc(100vh - 65px);
-
 }
-
-
-/* =========================
-   CHAT LIST
-========================= */
 
 #Chats {
-
     width: 280px;
-
-    background: #151515;
-
+    flex-shrink: 0;
+    background: var(--panel);
     border-right: 1px solid #333;
-
     overflow-y: auto;
-
     padding: 15px;
-
 }
 
-
-#Chats h2 {
-
-    margin-top: 5px;
-
-}
-
-
-#UserList p {
-
-    margin: 5px 0;
-
-    padding: 12px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    background: #202020;
-
-}
-
-
-#UserList p:hover {
-
-    background: #292929;
-
-}
-
+#Chats h2 { margin-top: 5px; }
 
 .UserItem {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--panel-2);
+    cursor: pointer;
 }
 
+.UserItem:hover { background: var(--accent-dark); }
 
-.UserAvatar {
+.UserItem.Active {
+    outline: 2px solid var(--accent);
+}
 
-    width: 38px;
+.UserName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-    height: 38px;
-
+.Avatar, .UserAvatar {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
     border-radius: 50%;
-
     object-fit: cover;
-
     background: #333;
-
 }
 
-
-/* =========================
-   CHAT
-========================= */
+.DefaultAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: #333;
+}
 
 #Chat {
-
     flex: 1;
-
-    display: flex;
-
-    flex-direction: column;
-
     min-width: 0;
-
+    display: flex;
+    flex-direction: column;
 }
-
 
 #ChatHeader {
-
     height: 65px;
-
+    flex-shrink: 0;
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     padding: 10px 15px;
-
-    background: #171717;
-
+    background: var(--panel);
     border-bottom: 1px solid #333;
-
 }
 
-
-#ChatHeader h2 {
-
-    margin: 0;
-
-}
-
-
-#TypingIndicator {
-
-    margin: 3px 0 0;
-
-    font-size: 12px;
-
-    color: var(--muted);
-
-}
-
-
-.Avatar {
-
-    width: 45px;
-
-    height: 45px;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    background: #333;
-
-}
-
-
-/* =========================
-   MESSAGES
-========================= */
+#ChatTitle { margin: 0; }
 
 #Messages {
-
     flex: 1;
-
     overflow-y: auto;
-
     padding: 15px;
-
 }
-
 
 .MessageBox {
-
     max-width: 65%;
-
     margin: 10px 0;
-
 }
-
 
 .Sent {
-
     margin-left: auto;
-
     text-align: right;
-
 }
-
 
 .Received {
-
     margin-right: auto;
-
     text-align: left;
-
 }
-
 
 .SenderName {
-
     margin: 0 5px 4px;
-
     font-size: 12px;
-
     font-weight: bold;
-
-    color: #aaa;
-
+    color: var(--muted);
 }
-
 
 .Message {
-
     display: inline-block;
-
     margin: 0;
-
     padding: 10px 14px;
-
     border-radius: 15px;
-
     word-break: break-word;
-
 }
 
-
-.Sent .Message {
-
-    background: var(--main);
-
-}
-
-
-.Received .Message {
-
-    background: var(--main-dark);
-
-}
-
-
-.MessageImage {
-
-    max-width: 180px;
-
-    max-height: 180px;
-
-    border-radius: 12px;
-
-    display: block;
-
-}
-
-
-.ReplyPreview {
-
-    font-size: 12px;
-
-    color: #aaa;
-
-    border-left: 3px solid var(--main);
-
-    padding-left: 7px;
-
-    margin-bottom: 5px;
-
-}
-
+.Sent .Message { background: var(--accent); }
+.Received .Message { background: var(--accent-dark); }
 
 .MessageActions {
-
-    margin-top: 4px;
-
     display: flex;
-
     gap: 4px;
-
+    margin-top: 4px;
     justify-content: flex-end;
-
 }
-
 
 .MessageActions button {
-
-    font-size: 11px;
-
     padding: 4px 7px;
-
+    font-size: 11px;
 }
-
 
 .Edited {
-
-    font-size: 10px;
-
-    color: #888;
-
     margin-left: 5px;
-
+    font-size: 10px;
+    color: #888;
 }
 
-
-/* =========================
-   REPLY BAR
-========================= */
-
-#ReplyBar {
-
-    display: none;
-
-    padding: 8px 12px;
-
-    background: #1b1b1b;
-
-    border-top: 1px solid #333;
-
-    justify-content: space-between;
-
+.ReplyPreview {
+    margin-bottom: 5px;
+    padding-left: 7px;
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+    font-size: 12px;
 }
-
-
-#ReplyText {
-
-    margin: 3px 0;
-
-    color: #aaa;
-
-}
-
-
-/* =========================
-   MESSAGE BAR
-========================= */
-
-#MessageBar {
-
-    display: flex;
-
-    gap: 8px;
-
-    padding: 10px;
-
-    background: var(--panel);
-
-}
-
-
-#Input {
-
-    flex: 1;
-
-    min-width: 0;
-
-    height: 40px;
-
-    padding: 10px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #292929;
-
-    color: white;
-
-    font-size: 16px;
-
-}
-
-
-#Send {
-
-    width: 75px;
-
-}
-
-
-#StickerButton {
-
-    width: 45px;
-
-    font-size: 18px;
-
-}
-
-
-/* =========================
-   STICKERS
-========================= */
-
-#StickerPanel {
-
-    display: none;
-
-    max-height: 160px;
-
-    overflow-y: auto;
-
-    padding: 10px;
-
-    background: #191919;
-
-    border-top: 1px solid #333;
-
-}
-
-
-.StickerChoice {
-
-    width: 60px;
-
-    height: 60px;
-
-    object-fit: contain;
-
-    padding: 5px;
-
-    margin: 4px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-}
-
-
-.StickerChoice:hover {
-
-    background: #292929;
-
-}
-
 
 .StickerMessage {
-
     width: 130px;
-
     max-height: 130px;
-
     object-fit: contain;
-
 }
 
+#ReplyBar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--panel);
+    border-top: 1px solid #333;
+}
 
-/* =========================
-   SETTINGS
-========================= */
+#ReplyText {
+    margin: 3px 0;
+    color: var(--muted);
+}
+
+#MessageBar {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background: var(--panel);
+}
+
+#Input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #292929;
+    color: white;
+    font-size: 16px;
+}
+
+#Send { width: 75px; }
+#StickerButton { width: 45px; font-size: 18px; }
+
+#StickerPanel {
+    display: none;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 10px;
+    background: var(--panel);
+    border-top: 1px solid #333;
+}
+
+.StickerChoice {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    padding: 5px;
+    margin: 4px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.StickerChoice:hover { background: #292929; }
 
 #SettingsPanel {
-
     display: none;
-
     position: fixed;
-
     right: 20px;
-
     top: 75px;
-
     width: 300px;
-
     max-height: calc(100vh - 95px);
-
     overflow-y: auto;
-
     padding: 20px;
-
-    background: #181818;
-
+    background: var(--panel);
     border: 1px solid #333;
-
     border-radius: 15px;
-
     z-index: 1000;
-
 }
-
 
 #SettingsPanel input {
-
     width: 100%;
-
     margin-bottom: 10px;
-
 }
 
-
-#SettingsPanel button {
-
-    margin: 4px 2px;
-
-}
-
+#SettingsPanel button { margin: 4px 2px; }
 
 #ThemeButtons {
-
     display: flex;
-
     flex-wrap: wrap;
-
 }
-
-
-/* =========================
-   THEMES
-========================= */
 
 body.theme-black {
-
-    --main: #333;
-
-    --main-dark: #222;
-
+    --accent: #333;
+    --accent-dark: #222;
     --background: #111;
-
 }
-
 
 body.theme-blue {
-
-    --main: #1769aa;
-
-    --main-dark: #12324a;
-
+    --accent: #1769aa;
+    --accent-dark: #12324a;
     --background: #081118;
-
 }
-
 
 body.theme-yellow {
-
-    --main: #b68b00;
-
-    --main-dark: #403600;
-
+    --accent: #b68b00;
+    --accent-dark: #403600;
     --background: #151200;
-
 }
-
 
 body.theme-red {
-
-    --main: #a51d2d;
-
-    --main-dark: #42151b;
-
+    --accent: #a51d2d;
+    --accent-dark: #42151b;
     --background: #15090b;
-
 }
-
 
 body.theme-green {
-
-    --main: #218739;
-
-    --main-dark: #123d1c;
-
+    --accent: #218739;
+    --accent-dark: #123d1c;
     --background: #08140b;
-
 }
-
 
 body.theme-pink {
-
-    --main: #b83280;
-
-    --main-dark: #42132f;
-
+    --accent: #b83280;
+    --accent-dark: #42132f;
     --background: #150911;
-
 }
 
-
-/* =========================
-   MOBILE
-========================= */
-
 @media (max-width: 700px) {
-
     #Chats {
-
         width: 90px;
-
         padding: 8px;
-
     }
 
+    #Chats h2 { font-size: 14px; }
 
-    #Chats h2 {
+    .UserItem { padding: 7px; justify-content: center; }
 
-        font-size: 14px;
+    .UserName { display: none; }
 
-    }
-
-
-    #UserList p {
-
-        padding: 7px;
-
-    }
-
-
-    .UserItem span {
-
-        display: none;
-
-    }
-
-
-    .UserAvatar {
-
-        width: 42px;
-
-        height: 42px;
-
-    }
-
-
-    .MessageBox {
-
-        max-width: 80%;
-
-    }
-
+    .MessageBox { max-width: 80%; }
 
     #SettingsPanel {
-
         left: 10px;
-
         right: 10px;
-
         width: auto;
-
     }
-
 }
